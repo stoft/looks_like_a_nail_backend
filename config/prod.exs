@@ -54,7 +54,7 @@ config :logger, level: :info
 config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: System.env("PG_USERNAME"),
-  password: System.env("PG_PASSWORD",
+  password: System.env("PG_PASSWORD"),
   database: "looks_like_a_nail_backend_prod",
   size: 20 
 
