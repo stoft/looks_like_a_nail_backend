@@ -15,7 +15,7 @@ config :looks_like_a_nail_backend, LooksLikeANailBackend.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "example.com", port: 80],
   cache_static_manifest: "priv/static/manifest.json",
-  secret_key_base: System.env("SECRET_KEY_BASE")
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # ## SSL Support
 #
@@ -53,8 +53,8 @@ config :logger, level: :info
 
 config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: System.env("PG_USERNAME"),
-  password: System.env("PG_PASSWORD"),
+  username: System.get_env("PG_USERNAME"),
+  password: System.get_env("PG_PASSWORD"),
   database: "looks_like_a_nail_backend_prod",
   size: 20 
 
