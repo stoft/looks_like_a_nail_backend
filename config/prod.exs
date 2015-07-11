@@ -14,7 +14,8 @@ use Mix.Config
 config :looks_like_a_nail_backend, LooksLikeANailBackend.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/manifest.json"
+  cache_static_manifest: "priv/static/manifest.json",
+  secret_key_base: System.env("SECRET_KEY_BASE")
 
 # ## SSL Support
 #
@@ -49,4 +50,12 @@ config :logger, level: :info
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
+
+config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: System.env("PG_USERNAME"),
+  password: System.env("PG_PASSWORD",
+  database: "looks_like_a_nail_backend_prod",
+  size: 20 
+
 # import_config "prod.secret.exs"
