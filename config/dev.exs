@@ -33,3 +33,10 @@ config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
   password: "postgres",
   database: "looks_like_a_nail_backend_dev",
   size: 10 # The amount of database connections in the pool
+
+config :looks_like_a_nail_backend, LooksLikeANailBackend.Neo4J,
+  host: "192.168.99.100",
+  port: 32770,
+  username: "neo4j",
+  password: "admin"
+

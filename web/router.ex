@@ -19,7 +19,9 @@ defmodule LooksLikeANailBackend.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", LooksLikeANailBackend do
-  #   pipe_through :api
-  # end
+  scope "/api", LooksLikeANailBackend do
+    pipe_through :api
+
+    resources "/api/v1/tool", ToolController
+  end
 end
