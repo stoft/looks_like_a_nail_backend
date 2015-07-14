@@ -17,3 +17,9 @@ config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
   database: "looks_like_a_nail_backend_test",
   pool: Ecto.Adapters.SQL.Sandbox, # Use a sandbox for transactional testing
   size: 1
+
+config :looks_like_a_nail_backend, LooksLikeANailBackend.Neo4J,
+  host: "localhost", #"192.168.99.100",
+  port: 7474, #32770,
+  username: "neo4j",
+  password: "admin"

@@ -2,22 +2,25 @@ defmodule Neo4J.Repo do
 
   def all!(type) do
     statement = apply(type, :get_all_statement, [])
+    data = do_cypher_statements!([statement])
+    apply(type, :extract_type, [data])
+  end
+
+  def create_node!(type, node) do
+    statement = apply(type, :get_create_statement, node)
     response = do_cypher_statements!([statement])
   end
 
   # def all!(type, query) do
-    
+
   # end
 
   defp do_cypher_statements!(statements) do
     url = compose_url(["transaction/commit"])
     json = Poison.encode!(embed_statements(statements))
-    IO.inspect response = HTTPoison.post!(url, json, [], [hackney: get_basic_auth_info])
-    list = response
-      |> Map.get(:body)
-      # |> Poison.decode!
-      # |> Enum.map(&convert_neo4j_to_ecto(type, &1))
-    list
+    headers = %{"Content-Type" => "application/json"}
+    response = HTTPoison.post!(url, json, headers, [hackney: get_basic_auth_info])
+    response |> Map.get(:body) |> Poison.decode!
   end
 
   defp embed_statements(statements) do

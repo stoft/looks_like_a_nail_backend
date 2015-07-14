@@ -18,7 +18,7 @@ defmodule LooksLikeANailBackend.Mixfile do
   def application do
     [mod: {LooksLikeANailBackend, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger,
-                    :phoenix_ecto, :httpoison]] #, :postgrex
+                    :httpoison, :postgrex, :phoenix_ecto]]
   end
 
   # Specifies which paths to compile per environment

@@ -27,9 +27,9 @@ defmodule LooksLikeANailBackend.Web do
       use Phoenix.Controller
 
       # Alias the data repository and import query/model functions
-      # alias LooksLikeANailBackend.Repo
-      # import Ecto.Model
-      # import Ecto.Query, only: [from: 2]
+      alias LooksLikeANailBackend.Repo
+      import Ecto.Model
+      import Ecto.Query, only: [from: 2]
 
       # Import URL helpers from the router
       import LooksLikeANailBackend.Router.Helpers
@@ -62,9 +62,9 @@ defmodule LooksLikeANailBackend.Web do
       use Phoenix.Channel
 
       # Alias the data repository and import query/model functions
-      # alias LooksLikeANailBackend.Repo
-      # import Ecto.Model
-      # import Ecto.Query, only: [from: 2]
+      alias LooksLikeANailBackend.Repo
+      import Ecto.Model
+      import Ecto.Query, only: [from: 2]
 
     end
   end

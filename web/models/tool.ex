@@ -19,11 +19,31 @@ defmodule LooksLikeANailBackend.Tool do
   #   errors
   # end
 
-  @all "MATCH (tools:Tool) RETURN tools"
-  @get ""
-
   def get_all_statement() do
-    @all
+    "MATCH (tool:Tool) RETURN tool"
   end
-  
+
+  def get_create_statement(tool) do
+    "CREATE (tool:Tool {#{tool}}
+    SET tool.id = id(tool) RETURN tool.id"
+  end
+
+  @doc """
+  Expects data in the following format:
+      %{"errors" => [],
+        "results" => [%{"columns" => ["tool"],
+        "data" => [%{"row" => [%{"id" => 0, "title" => "Foo"}]},
+        %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}]}
+
+  Outputs data in the following format:
+      %{"tools" => [
+        %{"row" => [%{"id" => 0, "title" => "Foo"}]},
+        %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}
+  """
+  def extract_type(data) do
+    data = data |> Map.get("results") |> hd |> Map.get("data")
+    Map.put(%{}, "tools", data)
+    IO.inspect data
+  end
+
 end
