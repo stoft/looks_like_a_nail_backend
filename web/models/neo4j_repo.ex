@@ -12,10 +12,10 @@ defmodule Neo4J.Repo do
     apply(type, :extract_type, [data])
   end
   
-
   def create_node!(type, node) do
     statement = apply(type, :get_create_statement, node)
     response = do_cypher_statements!([statement])
+    response |> Map.get(:body) |> Poison.decode!
   end
 
   # def all!(type, query) do

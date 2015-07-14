@@ -1,6 +1,5 @@
 defmodule LooksLikeANailBackend.Tool do
 
-
   defstruct(id: nil,
     title: nil,
     sub_title: "",
@@ -27,9 +26,17 @@ defmodule LooksLikeANailBackend.Tool do
     "MATCH (tool:Tool {id: #{id}}) RETURN tool"
   end
 
-  def get_create_statement(tool) do
-    "CREATE (tool:Tool {#{tool}}
-    SET tool.id = id(tool) RETURN tool.id"
+  @doc """
+  iex> LooksLikeANailBackend.Tool.get_create_statement(%{title: "Foo"})
+  "CREATE (tool:Tool {title:Foo} SET tool.id = id(tool) RETURN tool.id"
+  """
+  def get_create_statement(map) do
+    tool = map
+      |> Enum.map(fn({k,v})-> 
+          to_string(k) <> ":" <> to_string(v) end)
+      |> to_string
+    "CREATE (tool:Tool {#{tool}} " <>
+    "SET tool.id = id(tool) RETURN tool.id"
   end
 
   @doc """
