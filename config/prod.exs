@@ -58,4 +58,10 @@ config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
   database: "looks_like_a_nail_backend_prod",
   size: 20 
 
+
+config :looks_like_a_nail_backend, LooksLikeANailBackend.Neo4J,
+  host: System.get_env("NEO4J_HOST"),
+  port: System.get_env("NEO4J_PORT"),
+  username: System.get_env("NEO4J_USER"),
+  password: System.get_env("NEO4J_PASSWORD")
 # import_config "prod.secret.exs"

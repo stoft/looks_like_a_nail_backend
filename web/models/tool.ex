@@ -27,16 +27,18 @@ defmodule LooksLikeANailBackend.Tool do
   end
 
   @doc """
-  iex> LooksLikeANailBackend.Tool.get_create_statement(%{title: "Foo"})
-  "CREATE (tool:Tool {title:Foo} SET tool.id = id(tool) RETURN tool.id"
+  Generates a create statement from a given Tool.
+
+      iex> LooksLikeANailBackend.Tool.get_create_statement(%{title: "Foo"})
+      "CREATE (tool:Tool {title: "Foo"}) SET tool.id = id(tool) RETURN tool"
   """
   def get_create_statement(map) do
     tool = map
       |> Enum.map(fn({k,v})-> 
-          to_string(k) <> ":" <> to_string(v) end)
-      |> to_string
-    "CREATE (tool:Tool {#{tool}} " <>
-    "SET tool.id = id(tool) RETURN tool.id"
+          "#{convert_type(k)}: \"#{convert_type(v)}\"" end)
+      |> Enum.join(", ")
+    "CREATE (tool:Tool {#{tool}}) " <>
+    "SET tool.id = id(tool) RETURN tool"
   end
 
   @doc """
@@ -56,4 +58,7 @@ defmodule LooksLikeANailBackend.Tool do
     Map.put(%{}, :tools, data)
   end
 
+  defp convert_type(data) when is_integer(data), do: data
+  defp convert_type(data), do: to_string data
+    
 end

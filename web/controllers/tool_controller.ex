@@ -16,7 +16,8 @@ defmodule LooksLikeANailBackend.ToolController do
   def create(conn, %{"tool" => tool}) do
     # tool = %Tool{}
 
-    id = Neo4J.Repo.create_node!(Tool, tool)
+    tools = Neo4J.Repo.create_node!(Tool, tool)
+    id = tools |> hd |> Map.get("row") |> hd |> Map.get("id")
     render(conn, :new, id: id)
 
 
