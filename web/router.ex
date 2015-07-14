@@ -22,6 +22,6 @@ defmodule LooksLikeANailBackend.Router do
   scope "/api", LooksLikeANailBackend do
     pipe_through :api
 
-    resources "/api/v1/tool", ToolController
+    resources "/v1/tool", ToolController
   end
 end

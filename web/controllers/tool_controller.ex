@@ -5,11 +5,14 @@ defmodule LooksLikeANailBackend.ToolController do
 
   def index(conn, _params) do
     tools = Neo4J.Repo.all!(Tool)
-    # IO.puts "in controller: "
-    # IO.inspect tools
-    render conn, :index, tools
+    render conn, :index, tools: tools
   end
 
+  def show(conn, %{"id" => id}) do
+    tool = Neo4J.Repo.get!(Tool, id)
+    render conn, :show, tool: tool
+  end
+  
   def create(conn, tool) do
     # tool = %Tool{}
 

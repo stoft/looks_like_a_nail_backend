@@ -23,6 +23,10 @@ defmodule LooksLikeANailBackend.Tool do
     "MATCH (tool:Tool) RETURN tool"
   end
 
+  def get_get_statement(id) do
+    "MATCH (tool:Tool {id: #{id}}) RETURN tool"
+  end
+
   def get_create_statement(tool) do
     "CREATE (tool:Tool {#{tool}}
     SET tool.id = id(tool) RETURN tool.id"
@@ -42,8 +46,7 @@ defmodule LooksLikeANailBackend.Tool do
   """
   def extract_type(data) do
     data = data |> Map.get("results") |> hd |> Map.get("data")
-    Map.put(%{}, "tools", data)
-    IO.inspect data
+    Map.put(%{}, :tools, data)
   end
 
 end

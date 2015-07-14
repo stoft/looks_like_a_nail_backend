@@ -6,6 +6,13 @@ defmodule Neo4J.Repo do
     apply(type, :extract_type, [data])
   end
 
+  def get!(type, id) do
+    statement = apply(type, :get_get_statement, [id])
+    data = do_cypher_statements!([statement])
+    apply(type, :extract_type, [data])
+  end
+  
+
   def create_node!(type, node) do
     statement = apply(type, :get_create_statement, node)
     response = do_cypher_statements!([statement])
