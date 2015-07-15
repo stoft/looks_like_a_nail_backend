@@ -1,5 +1,5 @@
 language: elixir
-otp_release: — 17.5
+otp_release: — 17.4
 deploy:
   provider: heroku
   buildpack: https://github.com/HashNuke/heroku-buildpack-elixir.git
