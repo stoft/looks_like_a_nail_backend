@@ -35,7 +35,7 @@ defmodule LooksLikeANailBackend.Tool do
   def get_create_statement(map) do
     tool = map
       |> Enum.map(fn({k,v})-> 
-          "#{convert_type(k)}: \"#{convert_type(v)}\"" end)
+          "#{convert_key(k)}: #{convert_value(v)}" end)
       |> Enum.join(", ")
     "CREATE (tool:Tool {#{tool}}) " <>
     "SET tool.id = id(tool) RETURN tool"
@@ -58,7 +58,8 @@ defmodule LooksLikeANailBackend.Tool do
     Map.put(%{}, :tools, data)
   end
 
-  defp convert_type(data) when is_integer(data), do: data
-  defp convert_type(data), do: to_string data
+  defp convert_key(key), do: to_string key
+  defp convert_value(value) when is_integer(value), do: value
+  defp convert_value(value), do: "\"#{to_string value}\""
     
 end

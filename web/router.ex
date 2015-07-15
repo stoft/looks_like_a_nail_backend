@@ -24,6 +24,6 @@ defmodule LooksLikeANailBackend.Router do
 
     # get "/", ApiController
 
-    resources "/v1/tool", ToolController
+    resources "/v1/tools", ToolController
   end
 end
