@@ -3,6 +3,8 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
 
   alias LooksLikeANailBackend.Tool
 
+  @moduletag :external
+
   @valid_attrs %{description: "some content",
     title: "title", sub_title: "sub_title",
     keywords: ["key", "word"], insert_at: "", updated_at: ""}

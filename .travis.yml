@@ -11,6 +11,8 @@ deploy:
   app: looks-like-a-nail-backend
   repo: stoft/looks-like-a-nail-backend
   strategy: git
+script:
+  - mix test --exclude external:true
 notifications:
   slack:
     secure: kShuePiZbN8bGr7LxmBLaz9GCh7qNJXWTlckRI3YaWih6ztXUSUlFWY7x/HAIliTd4+JzzTz+YAmaUSSDATJhfwqahfAphdNqtFLtCJsXCvuOeteYs8zGbAHaJddwZrz0YoBXxpK3chx1jTL5zMu88Y1I2kRVkMYLLN+yhZ1XM090YqHVlN855ZHkiinIexXvbtmKF8PtkNDmLME5oewb2vlKyzy2+Xl7WUjhrQzKFmDN0329ZcvByULpbY3Mv96ymkFV7sbC/ZMYOtnYhEEX/ubVJm/hu3jrsOJRG1FqXKsJhAGItBg6ewKG+KCMXfRo4+bytKgQxqWJnEH3no6HGKg0c2fCimyHbMF3XV4H98zPJm2awodSiluqPAF0R0wFYND1ar/tFRa9vlaGOwKirSPrAYFRBSkiH8M9A6dfnMQAaNMKe6auN2YdlZMwdjUea70t0In+Qt9SOLyZ7UQRZNTQI0lteNkXIxKRVKm/Mh1mfaETJZSIn78CglFehB0NnlN3vcABKFYLzTKVbs/uBRnOLjsPJgb8F4Nhme/E3q91/dFvQHsS4P1hNOWre0yMtdHsBmqCv642ACdcEleOpRXX56zYAVFrmLtYapLjFG3YcjqeB+Ec9dhRd62BpxE78CpXeZSpQuhkYmSPejznjjY5SIt0MelIJbxS2mLuAk=
