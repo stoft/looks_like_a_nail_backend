@@ -1,64 +1,61 @@
-defmodule LooksLikeANailBackend.Tool do
+defmodule LooksLikeANailBackend.Task do
 
   defstruct(id: nil,
     title: nil,
-    subTitle: "",
+    sub_title: "",
     keywords: [],
     description: "",
-    inserted: "",
-    updated: "")
+    inserted_at: "",
+    updated_at: "")
 
   @required_fields ~w(id title)
   @optional_fields ~w(sub_title keywords description)
 
-  # def validate(tool) do
+  # def validate(task) do
   #   errors = []
   #   for field <- @required_fields, do:
-  #     if(Map.get(tool, field) == nil), do: errors = errors ++ {ValidationError, "Field #{field} must not be nil."}
+  #     if(Map.get(task, field) == nil), do: errors = errors ++ {ValidationError, "Field #{field} must not be nil."}
   #   errors
   # end
 
   def get_all_statement() do
-    "MATCH (tool:Tool) RETURN tool"
+    "MATCH (task:Task) RETURN task"
   end
 
   def get_get_statement(id) do
-    "MATCH (tool:Tool {id: #{id}}) RETURN tool"
+    "MATCH (task:Task {id: #{id}}) RETURN task"
   end
 
   @doc """
-  Generates a create statement from a given Tool.
+  Generates a create statement from a given Task.
 
-      iex> LooksLikeANailBackend.Tool.get_create_statement(%{title: "Foo"})
-      "CREATE (tool:Tool {title: "Foo"}) SET tool.id = id(tool) RETURN tool"
+      iex> LooksLikeANailBackend.Task.get_create_statement(%{title: "Foo"})
+      "CREATE (task:Task {title: "Foo"}) SET task.id = id(task) RETURN task"
   """
   def get_create_statement(map) do
-    tool = map
+    task = map
       |> Enum.map(fn({k,v})-> 
           "#{convert_key(k)}: #{convert_value(v)}" end)
       |> Enum.join(", ")
-    "CREATE (tool:Tool {#{tool}}) " <>
-    "SET tool.id = id(tool) RETURN tool"
+    "CREATE (task:Task {#{task}}) " <>
+    "SET task.id = id(task) RETURN task"
   end
 
   @doc """
   Expects data in the following format:
       %{"errors" => [],
-        "results" => [%{"columns" => ["tool"],
+        "results" => [%{"columns" => ["task"],
         "data" => [%{"row" => [%{"id" => 0, "title" => "Foo"}]},
         %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}]}
 
   Outputs data in the following format:
-      %{"tools" => [
+      %{"tasks" => [
         %{"row" => [%{"id" => 0, "title" => "Foo"}]},
         %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}
   """
   def extract_type(data) do
     data = data |> Map.get("results") |> hd |> Map.get("data")
-    # data = Enum.map(data, fn(%{"row" => row }) ->
-    #   hd(row)
-    # end)
-    Map.put(%{}, :tools, data)
+    Map.put(%{}, :tasks, data)
   end
 
   defp convert_key(key), do: to_string key

@@ -36,6 +36,7 @@ defmodule LooksLikeANailBackend.Mixfile do
      {:phoenix_live_reload, "~> 0.4", only: :dev},
      {:cowboy, "~> 1.0"},
      {:timex, "~> 0.16.0"},
+     {:cors_plug, "~> 0.1.3"},
      {:httpoison, "~> 0.7"}]
   end
 end

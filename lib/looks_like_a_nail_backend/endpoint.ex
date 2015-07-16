@@ -32,5 +32,7 @@ defmodule LooksLikeANailBackend.Endpoint do
     key: "_looks_like_a_nail_backend_key",
     signing_salt: "n108GboV"
 
+  plug CORSPlug
+
   plug :router, LooksLikeANailBackend.Router
 end

@@ -2,8 +2,8 @@ defmodule Neo4J.Repo do
 
   def all!(type) do
     statement = apply(type, :get_all_statement, [])
-    data = do_cypher_statements!([statement])
-    apply(type, :extract_type, [data])
+    IO.inspect data = do_cypher_statements!([statement])
+    IO.inspect apply(type, :extract_type, [data])
   end
 
   def get!(type, id) do

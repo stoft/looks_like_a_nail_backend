@@ -5,7 +5,7 @@ defmodule LooksLikeANailBackend.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
-    plug :protect_from_forgery
+    # plug :protect_from_forgery
   end
 
   pipeline :api do
@@ -19,11 +19,12 @@ defmodule LooksLikeANailBackend.Router do
   end
 
   # Other scopes may use custom stacks.
-  scope "/api", LooksLikeANailBackend do
+  scope "/api/v1", LooksLikeANailBackend do
     pipe_through :api
 
     # get "/", ApiController
 
-    resources "/v1/tools", ToolController
+    resources "/tools", ToolController
+    resources "/tasks", TaskController
   end
 end
