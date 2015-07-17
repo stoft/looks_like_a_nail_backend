@@ -11,8 +11,11 @@ defmodule LooksLikeANailBackend.ToolView do
     %{tool: tool}
   end
 
+  def render("new.json", %{tool: tool}) do
+    %{tool: tool}
+  end
+
   def render("tool.json", %{tool: tool}) do
-    # %{id: tool.id}
     %{tool: tool}
   end
 end

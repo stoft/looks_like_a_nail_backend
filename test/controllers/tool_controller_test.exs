@@ -27,11 +27,20 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     assert response |> Map.has_key?("tool")
   end
 
-  # test "create one entry", %{conn: conn} do
-  #   entry = %{title: "Baz", sub_title: "barzilla"}
-  #   conn = post conn, tool_path(conn, :create, tool: entry)
-  #   IO.inspect json_response(conn, 200)
-  #   # assert json_response(conn, 200)["data"] |> Map.has_key?("tools")
-  # end
+  test "create one entry", %{conn: conn} do
+    entry = %{tool: %{id: 1,
+      title: "Elixir",
+      subTitle: "Programming Language",
+      description: "A functional programming language " <>
+        "standing on the shoulders of giants.",
+      updated: "2015-07-16T15:46:53.023+0000",
+      created: "2015-07-16T15:46:53.023+0000",
+      keywords: ["functional", "programming", "erlang"]}}
+      # features: [1,2,3]}}
+    conn = post conn, tool_path(conn, :create, entry)
+    IO.inspect response = json_response(conn, 200)
+    assert response |> Map.has_key?("tool")
+    # assert json_response(conn, 200) |> Map.has_key?("tools")
+  end
 
 end

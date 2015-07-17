@@ -2,6 +2,7 @@ defmodule LooksLikeANailBackend.ToolController do
   use LooksLikeANailBackend.Web, :controller
 
   alias LooksLikeANailBackend.Tool
+  alias LooksLikeANailBackend.Utils
 
   def index(conn, _params) do
     tools = Neo4J.Repo.all!(Tool)
@@ -14,12 +15,10 @@ defmodule LooksLikeANailBackend.ToolController do
   end
   
   def create(conn, %{"tool" => tool}) do
-    # tool = %Tool{}
-
-    tools = Neo4J.Repo.create_node!(Tool, tool)
-    id = tools |> hd |> Map.get("row") |> hd |> Map.get("id")
-    render(conn, :new, id: id)
-
+    ts = Utils.get_timestamp_now()
+    tool = %{tool| "updated" => ts, "created" => ts}
+    tool = Neo4J.Repo.create_node!(Tool, tool)
+    render(conn, :new, tool: tool)
 
     # if changeset.valid? do
     #   # Repo.insert!(changeset)
