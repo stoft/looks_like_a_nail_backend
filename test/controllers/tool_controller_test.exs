@@ -27,6 +27,12 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     assert response |> Map.has_key?("tool")
   end
 
+  test "try to show one non-existent entry", %{conn: conn} do
+    conn = get conn, tool_path(conn, :show, 999999)
+    response = json_response(conn, 404)
+    assert response == "Page not found"
+  end
+
   test "create one entry", %{conn: conn} do
     entry = %{tool: %{id: 1,
       title: "Elixir",
@@ -38,9 +44,29 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
       keywords: ["functional", "programming", "erlang"]}}
       # features: [1,2,3]}}
     conn = post conn, tool_path(conn, :create, entry)
-    IO.inspect response = json_response(conn, 200)
+    response = json_response(conn, 200)
     assert response |> Map.has_key?("tool")
     # assert json_response(conn, 200) |> Map.has_key?("tools")
+  end
+
+  test "update one entry", %{conn: conn} do
+    entry = %{tool: %{id: 1,
+      title: "Elixir",
+      subTitle: "Programming Language",
+      description: "A functional programming language " <>
+        "standing on the shoulders of giants.",
+      updated: "2015-07-16T15:46:53.023+0000",
+      created: "2015-07-16T15:46:53.023+0000",
+      keywords: ["functional", "programming", "erlang"]}}
+      # features: [1,2,3]}}
+    conn = put conn, tool_path(conn, :update, 1, entry)
+    response = json_response(conn, 200)
+    assert response |> Map.has_key?("tool")
+    # assert json_response(conn, 200) |> Map.has_key?("tools")
+  end
+
+  test "delete one entry", %{conn: conn} do
+
   end
 
 end

@@ -27,6 +27,24 @@ defmodule LooksLikeANailBackend.Tool do
     "MATCH (tool:Tool {id: #{id}}) RETURN tool"
   end
 
+  def get_delete_statement(id) do
+    "MATCH (tool:Tool) WHERE tool.id = #{id} DELETE tool"
+  end
+
+  def get_update_statement(tool) do
+    id = Map.get(tool, "id")
+    title = Map.get(tool, "title")
+    subTitle = Map.get(tool, "subTitle")
+    description = Map.get(tool, "description")
+    keywords = Map.get(tool, "keywords")
+    "MATCH (tool:Tool {id: #{id}}) " <>
+    "SET tool.title = \"#{title}\", " <>
+    "tool.subTitle = \"#{subTitle}\", " <>
+    "tool.description = \"#{description}\", " <>
+    "tool.updated = timestamp() " <>
+    "RETURN tool"
+  end
+
   @doc """
   Generates a create statement from a given Tool.
 
@@ -39,7 +57,9 @@ defmodule LooksLikeANailBackend.Tool do
           "#{convert_key(k)}: #{convert_value(v)}" end)
       |> Enum.join(", ")
     "CREATE (tool:Tool {#{tool}}) " <>
-    "SET tool.id = id(tool) RETURN tool"
+    "SET tool.id = id(tool), " <>
+    "tool.updated = timestamp(), tool.created = timestamp() " <>
+    "RETURN tool"
   end
 
   @doc """

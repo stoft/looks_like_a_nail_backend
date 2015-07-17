@@ -21,6 +21,18 @@ defmodule Neo4J.Repo do
     # apply(type, :extract_type, [data])
   end
 
+  def delete!(type, node) do
+    statement = apply(type, :get_delete_statement, [node])
+    IO.inspect data = do_cypher_statements!([statement])
+    #TODO
+  end
+
+  def update!(type, node) do
+    statement = apply(type, :get_update_statement, [node])
+    data = do_cypher_statements!([statement])
+    convert_to_type data, type
+  end
+
   # def all!(type, query) do
 
   # end
@@ -82,5 +94,5 @@ defmodule Neo4J.Repo do
 
   defp return_single_or_list([h|[]]), do: h
   defp return_single_or_list([h|tail]), do: [h] ++ tail
-  defp return_single_or_list([]), do: %{}
+  defp return_single_or_list([]), do: nil
 end

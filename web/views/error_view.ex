@@ -5,9 +5,18 @@ defmodule LooksLikeANailBackend.ErrorView do
     "Page not found"
   end
 
+  def render("404.json", _assigns) do
+    "Page not found"
+  end 
+
   def render("500.html", _assigns) do
     "Server internal error"
   end
+
+  def render("500.json", _assigns) do
+    "Server internal error"
+  end
+  
 
   # In case no render clause matches or no
   # template is found, let's render it as 500
