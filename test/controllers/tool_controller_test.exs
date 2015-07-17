@@ -17,7 +17,8 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, tool_path(conn, :index)
-    assert json_response(conn, 200)["data"] |> Map.has_key?("tools")
+    # IO.inspect json_response(conn, 200)
+    assert json_response(conn, 200) |> Map.has_key?("tools")
   end
 
   test "show one entry", %{conn: conn} do

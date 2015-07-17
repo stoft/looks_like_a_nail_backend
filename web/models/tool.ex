@@ -7,6 +7,7 @@ defmodule LooksLikeANailBackend.Tool do
     description: "",
     inserted: "",
     updated: "")
+    # features: [])
 
   @required_fields ~w(id title)
   @optional_fields ~w(sub_title keywords description)

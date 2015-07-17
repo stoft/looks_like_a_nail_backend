@@ -2,20 +2,23 @@ defmodule Neo4J.Repo do
 
   def all!(type) do
     statement = apply(type, :get_all_statement, [])
-    IO.inspect data = do_cypher_statements!([statement])
-    IO.inspect apply(type, :extract_type, [data])
+    data = do_cypher_statements!([statement])
+    convert_to_type(data, type)
+    # apply(type, :extract_type, [data])
   end
 
   def get!(type, id) do
     statement = apply(type, :get_get_statement, [id])
     data = do_cypher_statements!([statement])
-    apply(type, :extract_type, [data])
+    convert_to_type(data, type)
+    # apply(type, :extract_type, [data])
   end
   
   def create_node!(type, node) do
     statement = apply(type, :get_create_statement, [node])
     data = do_cypher_statements!([statement])
-    apply(type, :extract_type, [data])
+    convert_to_type(data, type)
+    # apply(type, :extract_type, [data])
   end
 
   # def all!(type, query) do
@@ -53,4 +56,31 @@ defmodule Neo4J.Repo do
     config = Application.get_env(:looks_like_a_nail_backend, LooksLikeANailBackend.Neo4J)
     config[:port]
   end
+
+  def convert_to_type(data, type) do
+    type_name = get_type_name(type)
+    name = fn(%{"columns" => list}) -> hd(list) == type_name end
+    data_list = data
+      |> Map.get("results")
+      |> Enum.filter(&name.(&1))
+      |> hd
+      |> Map.get("data")
+      |> Enum.map(fn(%{"row" => row}) -> convert_fields(hd(row)) end)
+    return_single_or_list(data_list)
+  end
+
+  defp get_type_name(type) do
+    type |> to_string |> String.split(".")
+      |> Enum.reverse |> hd |> String.downcase
+  end
+
+  defp convert_fields(map) do
+    Enum.reduce(map, %{}, fn({k, v},acc) ->
+      Map.put(acc, String.to_atom(k), v)
+    end)
+  end
+
+  defp return_single_or_list([h|[]]), do: h
+  defp return_single_or_list([h|tail]), do: [h] ++ tail
+  defp return_single_or_list([]), do: %{}
 end

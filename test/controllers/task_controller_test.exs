@@ -17,7 +17,7 @@ defmodule LooksLikeANailBackend.TaskControllerTest do
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, task_path(conn, :index)
-    assert json_response(conn, 200)["data"] |> Map.has_key?("tasks")
+    assert json_response(conn, 200) |> IO.inspect |> Map.has_key?("tasks")
   end
 
   test "show one entry", %{conn: conn} do

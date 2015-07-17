@@ -3,7 +3,7 @@ defmodule LooksLikeANailBackend.TaskView do
 
   def render("index.json", %{tasks: tasks}) do
     # %{data: render_many(tasks, "task.json")}
-    %{data: tasks}
+    %{tasks: tasks}
   end
 
   def render("show.json", %{task: task}) do
@@ -13,6 +13,6 @@ defmodule LooksLikeANailBackend.TaskView do
 
   def render("task.json", %{task: task}) do
     # %{id: task.id}
-    task
+    %{task: task}
   end
 end

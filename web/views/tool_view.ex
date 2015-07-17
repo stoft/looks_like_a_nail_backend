@@ -3,7 +3,7 @@ defmodule LooksLikeANailBackend.ToolView do
 
   def render("index.json", %{tools: tools}) do
     # %{data: render_many(tools, "tool.json")}
-    %{data: tools}
+    %{tools: tools}
   end
 
   def render("show.json", %{tool: tool}) do
@@ -13,6 +13,6 @@ defmodule LooksLikeANailBackend.ToolView do
 
   def render("tool.json", %{tool: tool}) do
     # %{id: tool.id}
-    tool
+    %{tool: tool}
   end
 end
