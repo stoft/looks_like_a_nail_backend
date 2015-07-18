@@ -1,6 +1,8 @@
 defmodule Neo4J.Repo do
   require Logger
 
+  alias LooksLikeANailBackend.Utils
+
   def all!(type) do
     statement = apply(type, :get_all_statement, [])
     data = do_cypher_statements!([statement])
@@ -25,7 +27,7 @@ defmodule Neo4J.Repo do
   def delete!(type, node) do
     statement = apply(type, :get_delete_statement, [node])
     IO.inspect data = do_cypher_statements!([statement])
-    #TODO
+    %{}
   end
 
   def update!(type, node) do
@@ -33,10 +35,6 @@ defmodule Neo4J.Repo do
     data = do_cypher_statements!([statement])
     convert_to_type data, type
   end
-
-  # def all!(type, query) do
-
-  # end
 
   defp do_cypher_statements!(statements) do
     url = compose_url(["transaction/commit"])
@@ -90,9 +88,20 @@ defmodule Neo4J.Repo do
   end
 
   defp convert_fields(map) do
-    Enum.reduce(map, %{}, fn({k, v},acc) ->
-      Map.put(acc, String.to_atom(k), v)
+    Enum.reduce(map, %{}, fn(pair,acc) ->
+      {k,v} = convert_field(pair)
+      Map.put(acc, k, v)
     end)
+  end
+
+  defp convert_field({"inserted", value}) when is_integer(value) do
+    {:inserted, Utils.convert_msecs_to_iso(value)}
+  end
+  defp convert_field({"updated", value}) when is_integer(value) do
+    {:updated, Utils.convert_msecs_to_iso(value)}
+  end
+  defp convert_field({k,v}) do
+    {String.to_atom(k), v}
   end
 
   defp return_single_or_list([h|[]]), do: h

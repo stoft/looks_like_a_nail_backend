@@ -25,11 +25,6 @@ defmodule LooksLikeANailBackend.ToolController do
   end
   
   def create(conn, %{"tool" => tool}) do
-    ts = Utils.get_timestamp_now()
-    tool = tool
-      |> Map.put("updated", ts)
-      |> Map.put("created", ts)
-    # tool = %{tool | "updated" => ts, "created" => ts}
     tool = Neo4J.Repo.create_node!(Tool, tool)
     render(conn, :new, tool: tool)
 
