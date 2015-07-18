@@ -65,6 +65,19 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     # assert json_response(conn, 200) |> Map.has_key?("tools")
   end
 
+  test "update one partial entry", %{conn: conn} do
+    entry = %{tool: %{id: 1,
+      title: "Elixir",
+      subTitle: "Programming Language",
+      description: "A functional programming language " <>
+        "standing on the shoulders of giants."}}
+      # features: [1,2,3]}}
+    conn = put conn, tool_path(conn, :update, 1, entry)
+    response = json_response(conn, 200)
+    assert response |> Map.has_key?("tool")
+    # assert json_response(conn, 200) |> Map.has_key?("tools")
+  end
+
   test "delete one entry", %{conn: conn} do
 
   end

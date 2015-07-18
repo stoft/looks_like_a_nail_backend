@@ -2,12 +2,17 @@ defmodule LooksLikeANailBackend.Utils do
   use Timex
 
   @doc """
-  Generates an ISO formatted timestamp for the current UTC date and time.
+  Converts msecs from epoch to ISO formatted datetime.
 
-  iex> LooksLikeANailBackend.Utils.get_timestamp_now()
-  "2015-07-16T08:15:30.729+0000"
+  iex> LooksLikeANailBackend.Utils.convert_msecs_to_iso(1437256886419)
+  "2015-07-18T22:01:26.419Z"
   """
-  def get_timestamp_now() do
-    Date.now |> DateFormat.format("{ISO}") |> elem(1)
+  def convert_msecs_to_iso(msecs) do
+    msecs
+    |> Time.from(:msecs)
+    |> Date.from(:timestamp)
+    |> DateFormat.format("{ISOz}")
+    |> elem(1)
   end
+  
 end

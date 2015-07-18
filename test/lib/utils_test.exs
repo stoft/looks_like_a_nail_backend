@@ -3,10 +3,10 @@ defmodule LooksLikeANailBackend.UtilsTest do
 
   alias LooksLikeANailBackend.Utils
 
-  test "get an ISO formatted UTC timestamp" do
-    timestamp = Utils.get_timestamp_now()
-    pattern = ~r/\d{4}-\d{2}-\d{2}T(\d\d:){2}\d{2}.\d{3}\+\d{4}/
-    assert Regex.match?(pattern, timestamp)
+  test "convert msecs from epoch to ISO date time" do
+    expected = "2015-07-18T22:01:26.419Z"
+    actual = LooksLikeANailBackend.Utils.convert_msecs_to_iso(1437256886419)
+    assert expected == actual
   end
   
 end

@@ -7,7 +7,7 @@ config :looks_like_a_nail_backend, LooksLikeANailBackend.Endpoint,
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :info
 
 # Configure your database
 config :looks_like_a_nail_backend, LooksLikeANailBackend.Repo,
