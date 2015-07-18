@@ -3,6 +3,15 @@ defmodule Neo4J.Repo do
 
   alias LooksLikeANailBackend.Utils
 
+  defmodule Neo4JError do
+    defexception [:message]
+    
+    def exception(value) do
+      msg = "Neo4J returned error: #{inspect value}"
+      %Neo4JError{message: msg}
+    end
+  end
+
   def all!(type) do
     statement = apply(type, :get_all_statement, [])
     data = do_cypher_statements!([statement])
@@ -42,8 +51,13 @@ defmodule Neo4J.Repo do
     headers = %{"Content-Type" => "application/json"}
     Logger.info "Request to Neo4J: " <> String.slice(json,0,1000)
     response = HTTPoison.post!(url, json, headers, [hackney: get_basic_auth_info])
-    Logger.info "Response from Neo4J" <> String.slice(Map.get(response, :body), 0, 1000)
-    response |> Map.get(:body) |> Poison.decode!
+    json_body = Map.get(response, :body)
+    Logger.info "Response from Neo4J" <> String.slice(json_body, 0, 1000)
+    body = json_body |> Poison.decode!
+    if(Map.get(body, "errors") != []) do
+      raise Neo4JError, Map.get(body, "errors")
+    end
+    body
   end
 
   defp embed_statements(statements) do
