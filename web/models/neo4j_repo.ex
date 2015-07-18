@@ -108,8 +108,8 @@ defmodule Neo4J.Repo do
     end)
   end
 
-  defp convert_field({"inserted", value}) when is_integer(value) do
-    {:inserted, Utils.convert_msecs_to_iso(value)}
+  defp convert_field({"created", value}) when is_integer(value) do
+    {:created, Utils.convert_msecs_to_iso(value)}
   end
   defp convert_field({"updated", value}) when is_integer(value) do
     {:updated, Utils.convert_msecs_to_iso(value)}

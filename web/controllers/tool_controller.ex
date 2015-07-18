@@ -67,7 +67,7 @@ defmodule LooksLikeANailBackend.ToolController do
   end
 
   def delete(conn, %{"id" => id}) do
-    tool = Repo.get!(Tool, id)
+    tool = Neo4J.Repo.get!(Tool, id)
     if(tool != nil) do
       Neo4J.Repo.delete!(Tool, id)
       render(conn, :new, tool: %{})
