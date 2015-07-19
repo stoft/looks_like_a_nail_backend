@@ -4,7 +4,7 @@ defmodule LooksLikeANailBackend.TaskTest do
   # doctest LooksLikeANailBackend.Task
 
   test "get create statement" do
-    statement = "CREATE (task:Task {title: \"Foo\"}) SET task.id = id(task) task.updated = timestamp(), task.created = timestamp() RETURN task"
+    statement = "CREATE (task:Task {title: \"Foo\"}) SET task.id = id(task), task.updated = timestamp(), task.created = timestamp() RETURN task"
     assert statement == LooksLikeANailBackend.Task.get_create_statement(%{title: "Foo"})
   end
 end
