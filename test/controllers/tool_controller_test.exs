@@ -33,21 +33,21 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     assert response == "Page not found"
   end
 
-  test "create one entry", %{conn: conn} do
-    entry = %{tool: %{id: 1,
-      title: "Elixir",
-      subTitle: "Programming Language",
-      description: "A functional programming language " <>
-        "standing on the shoulders of giants.",
-      updated: "2015-07-16T15:46:53.023+0000",
-      created: "2015-07-16T15:46:53.023+0000",
-      keywords: ["functional", "programming", "erlang"]}}
-      # features: [1,2,3]}}
-    conn = post conn, tool_path(conn, :create, entry)
-    response = json_response(conn, 200)
-    assert response |> Map.has_key?("tool")
-    # assert json_response(conn, 200) |> Map.has_key?("tools")
-  end
+  # test "create one entry", %{conn: conn} do
+  #   entry = %{tool: %{id: 1,
+  #     title: "Elixir",
+  #     subTitle: "Programming Language",
+  #     description: "A functional programming language " <>
+  #       "standing on the shoulders of giants.",
+  #     updated: "2015-07-16T15:46:53.023+0000",
+  #     created: "2015-07-16T15:46:53.023+0000",
+  #     keywords: ["functional", "programming", "erlang"]}}
+  #     # features: [1,2,3]}}
+  #   conn = post conn, tool_path(conn, :create, entry)
+  #   response = json_response(conn, 200)
+  #   assert response |> Map.has_key?("tool")
+  #   # assert json_response(conn, 200) |> Map.has_key?("tools")
+  # end
 
   test "update one entry", %{conn: conn} do
     entry = %{tool: %{id: 1,
