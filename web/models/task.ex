@@ -56,7 +56,7 @@ defmodule LooksLikeANailBackend.Task do
           "#{convert_key(k)}: #{convert_value(v)}" end)
       |> Enum.join(", ")
     "CREATE (task:Task {#{task}}) " <>
-    "SET task.id = id(task) " <>
+    "SET task.id = id(task), " <>
     "task.updated = timestamp(), task.created = timestamp() " <>
     "RETURN task"
   end
