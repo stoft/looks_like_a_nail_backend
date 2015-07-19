@@ -16,43 +16,40 @@ defmodule Neo4J.Repo do
     statement = apply(type, :get_all_statement, [])
     data = do_cypher_statements!([statement])
     convert_to_type(data, type)
-    # apply(type, :extract_type, [data])
   end
 
   def get!(type, id) do
     statement = apply(type, :get_get_statement, [id])
     data = do_cypher_statements!([statement])
-    convert_to_type(data, type)
-    # apply(type, :extract_type, [data])
+    convert_to_type(data, type) |> return_single_or_nil
   end
   
   def create_node!(type, node) do
     statement = apply(type, :get_create_statement, [node])
     data = do_cypher_statements!([statement])
-    convert_to_type(data, type)
-    # apply(type, :extract_type, [data])
+    convert_to_type(data, type) |> return_single_or_nil
   end
 
   def delete!(type, node) do
     statement = apply(type, :get_delete_statement, [node])
-    IO.inspect data = do_cypher_statements!([statement])
+    data = do_cypher_statements!([statement])
     %{}
   end
 
   def update!(type, node) do
     statement = apply(type, :get_update_statement, [node])
     data = do_cypher_statements!([statement])
-    convert_to_type data, type
+    convert_to_type(data, type) |> return_single_or_nil
   end
 
   defp do_cypher_statements!(statements) do
     url = compose_url(["transaction/commit"])
     json = Poison.encode!(embed_statements(statements))
     headers = %{"Content-Type" => "application/json"}
-    Logger.info "Request to Neo4J: " <> String.slice(json,0,1000)
+    Logger.info "Request to Neo4J: " <> String.slice(json, 0, 500)
     response = HTTPoison.post!(url, json, headers, [hackney: get_basic_auth_info])
     json_body = Map.get(response, :body)
-    Logger.info "Response from Neo4J" <> String.slice(json_body, 0, 1000)
+    Logger.info "Response from Neo4J: " <> String.slice(json_body, 0, 500)
     body = json_body |> Poison.decode!
     if(Map.get(body, "errors") != []) do
       raise Neo4JError, Map.get(body, "errors")
@@ -93,7 +90,7 @@ defmodule Neo4J.Repo do
       |> hd
       |> Map.get("data")
       |> Enum.map(fn(%{"row" => row}) -> convert_fields(hd(row)) end)
-    return_single_or_list(data_list)
+    # return_single_or_list(data_list)
   end
 
   defp get_type_name(type) do
@@ -118,7 +115,6 @@ defmodule Neo4J.Repo do
     {String.to_atom(k), v}
   end
 
-  defp return_single_or_list([h|[]]), do: h
-  defp return_single_or_list([h|tail]), do: [h] ++ tail
-  defp return_single_or_list([]), do: nil
+  defp return_single_or_nil([h|_]), do: h
+  defp return_single_or_nil([]), do: nil
 end

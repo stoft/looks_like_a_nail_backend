@@ -12,7 +12,7 @@ defmodule LooksLikeANailBackend.Neo4J.RepoTest do
           %{"id" => 1, "title" => "Foo", "subTitle" => "Bar", "description" => "grill"}]}
         ]}
       ]}
-    expected = %{id: 1, title: "Foo", subTitle: "Bar", description: "grill"}
+    expected = [%{id: 1, title: "Foo", subTitle: "Bar", description: "grill"}]
     assert expected == Repo.convert_to_type(response, Tool)
   end
 
