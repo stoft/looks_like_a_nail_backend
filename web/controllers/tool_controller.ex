@@ -41,8 +41,6 @@ defmodule LooksLikeANailBackend.ToolController do
   end
 
   def update(conn, %{"id" => id, "tool" => tool_params}) do
-    # IO.inspect assigns
-    # %{"tool" => tool_params, "id" => id} = assigns
     tool = Neo4J.Repo.get!(Tool, id)
     if(tool != nil) do
       tool_params = Map.put(tool_params, "id", id)

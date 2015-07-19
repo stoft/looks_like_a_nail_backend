@@ -21,7 +21,7 @@ defmodule LooksLikeANailBackend.TaskControllerTest do
   end
 
   test "show one entry", %{conn: conn} do
-    conn = get conn, task_path(conn, :show, 1)
+    conn = get conn, task_path(conn, :show, 50)
     response = json_response(conn, 200)
     assert response |> Map.has_key?("task")
   end

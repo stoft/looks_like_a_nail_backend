@@ -76,9 +76,6 @@ defmodule LooksLikeANailBackend.Tool do
   """
   def extract_type(data) do
     data = data |> Map.get("results") |> hd |> Map.get("data")
-    # data = Enum.map(data, fn(%{"row" => row }) ->
-    #   hd(row)
-    # end)
     Map.put(%{}, :tools, data)
   end
 

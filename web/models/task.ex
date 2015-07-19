@@ -26,6 +26,24 @@ defmodule LooksLikeANailBackend.Task do
     "MATCH (task:Task {id: #{id}}) RETURN task"
   end
 
+  def get_delete_statement(id) do
+    "MATCH (task:Task) WHERE task.id = #{id} DELETE task"
+  end
+
+  def get_update_statement(task) do
+    id = Map.get(task, "id")
+    title = Map.get(task, "title")
+    subTitle = Map.get(task, "subTitle")
+    description = Map.get(task, "description")
+    keywords = Map.get(task, "keywords")
+    "MATCH (task:Task {id: #{id}}) " <>
+    "SET task.title = \"#{title}\", " <>
+    "task.subTitle = \"#{subTitle}\", " <>
+    "task.description = \"#{description}\", " <>
+    "task.updated = timestamp() " <>
+    "RETURN task"
+  end
+
   @doc """
   Generates a create statement from a given Task.
 

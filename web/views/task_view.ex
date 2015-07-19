@@ -11,6 +11,10 @@ defmodule LooksLikeANailBackend.TaskView do
     %{task: task}
   end
 
+  def render("new.json", %{task: task}) do
+    %{task: task}
+  end
+
   def render("task.json", %{task: task}) do
     # %{id: task.id}
     %{task: task}
