@@ -10,7 +10,7 @@ defmodule LooksLikeANailBackend.Tool do
     # features: [])
 
   @required_fields ~w(id title)
-  @optional_fields ~w(sub_title keywords description)
+  @optional_fields ~w(subTitle keywords description)
 
   # def validate(tool) do
   #   errors = []
@@ -74,10 +74,10 @@ defmodule LooksLikeANailBackend.Tool do
         %{"row" => [%{"id" => 0, "title" => "Foo"}]},
         %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}
   """
-  def extract_type(data) do
-    data = data |> Map.get("results") |> hd |> Map.get("data")
-    Map.put(%{}, :tools, data)
-  end
+  # def extract_type(data) do
+  #   data = data |> Map.get("results") |> hd |> Map.get("data")
+  #   Map.put(%{}, :tools, data)
+  # end
 
   defp convert_key(key), do: to_string key
   defp convert_value(value) when is_integer(value), do: value
