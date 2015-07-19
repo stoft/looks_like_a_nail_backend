@@ -2,14 +2,14 @@ defmodule LooksLikeANailBackend.Task do
 
   defstruct(id: nil,
     title: nil,
-    sub_title: "",
+    subTitle: "",
     keywords: [],
     description: "",
-    inserted_at: "",
-    updated_at: "")
+    created: "",
+    updated: "")
 
   @required_fields ~w(id title)
-  @optional_fields ~w(sub_title keywords description)
+  @optional_fields ~w(subTitle keywords description)
 
   # def validate(task) do
   #   errors = []
@@ -56,24 +56,9 @@ defmodule LooksLikeANailBackend.Task do
           "#{convert_key(k)}: #{convert_value(v)}" end)
       |> Enum.join(", ")
     "CREATE (task:Task {#{task}}) " <>
-    "SET task.id = id(task) RETURN task"
-  end
-
-  @doc """
-  Expects data in the following format:
-      %{"errors" => [],
-        "results" => [%{"columns" => ["task"],
-        "data" => [%{"row" => [%{"id" => 0, "title" => "Foo"}]},
-        %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}]}
-
-  Outputs data in the following format:
-      %{"tasks" => [
-        %{"row" => [%{"id" => 0, "title" => "Foo"}]},
-        %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}
-  """
-  def extract_type(data) do
-    data = data |> Map.get("results") |> hd |> Map.get("data")
-    Map.put(%{}, :tasks, data)
+    "SET task.id = id(task) " <>
+    "task.updated = timestamp(), task.created = timestamp() " <>
+    "RETURN task"
   end
 
   defp convert_key(key), do: to_string key

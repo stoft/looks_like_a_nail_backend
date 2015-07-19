@@ -62,23 +62,6 @@ defmodule LooksLikeANailBackend.Tool do
     "RETURN tool"
   end
 
-  @doc """
-  Expects data in the following format:
-      %{"errors" => [],
-        "results" => [%{"columns" => ["tool"],
-        "data" => [%{"row" => [%{"id" => 0, "title" => "Foo"}]},
-        %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}]}
-
-  Outputs data in the following format:
-      %{"tools" => [
-        %{"row" => [%{"id" => 0, "title" => "Foo"}]},
-        %{"row" => [%{"id" => 1, "title" => "Bar"}]}]}
-  """
-  # def extract_type(data) do
-  #   data = data |> Map.get("results") |> hd |> Map.get("data")
-  #   Map.put(%{}, :tools, data)
-  # end
-
   defp convert_key(key), do: to_string key
   defp convert_value(value) when is_integer(value), do: value
   defp convert_value(value), do: "\"#{to_string value}\""
