@@ -42,7 +42,7 @@ defmodule Neo4J.Repo do
     convert_to_type(data, type) |> return_single_or_nil
   end
 
-  defp do_cypher_statements!(statements) do
+  def do_cypher_statements!(statements) do
     url = compose_url(["transaction/commit"])
     json = Poison.encode!(embed_statements(statements))
     headers = %{"Content-Type" => "application/json"}
