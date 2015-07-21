@@ -20,6 +20,25 @@ defmodule LooksLikeANailBackend.TestDBHelper do
     result = Neo4J.Repo.do_cypher_statements! statements
   end
 
+  def create_single_node(type) do
+    statement = "CREATE (n:#{type} {title: \"Example\"}) \
+      SET n.id = id(n) RETURN n"
+    result = Neo4J.Repo.do_cypher_statements! [statement]
+    data = for result <- result["results"], do: result["data"] |> hd
+    ids = for m <- data, do: m["row"] |> hd |> Dict.get("id")
+  end
+
+  def delete_single_node(id) do
+    statement = "MATCH (n {id: #{id}}) DELETE n"
+    result = Neo4J.Repo.do_cypher_statements! [statement]
+  end
+
+  def get_ids_from_neo_response(response) do
+    data = for result <- response["results"], do: result["data"] |> hd
+    ids = for m <- data, do: m["row"] |> hd |> Dict.get("id")
+  end
+  
+
   defp get_create_statement(tool, feature, task) do
     "CREATE (to:Tool #{tool})-[:IMPLEMENTS]->\
       (f:Feature #{feature})-[:IS_CAPABLE_OF]->\
