@@ -5,12 +5,13 @@ defmodule LooksLikeANailBackend.Tool do
     subTitle: "",
     keywords: [],
     description: "",
+    features: [],
     inserted: "",
     updated: "")
     # features: [])
 
   @required_fields ~w(id title)
-  @optional_fields ~w(subTitle keywords description)
+  @optional_fields ~w(subTitle keywords description features)
 
   # def validate(tool) do
   #   errors = []
@@ -24,11 +25,17 @@ defmodule LooksLikeANailBackend.Tool do
   end
 
   def get_get_statement(id) do
+    # "MATCH (tool:Tool {id: #{id}})\
+    # OPTIONAL MATCH (tool)-[ri:IMPLEMENTS]->\
+    # (feature:Feature)-[rj:IS_CAPABLE_OF|:SUPPORTS]->\
+    # (node) RETURN tool, feature, node"
     "MATCH (tool:Tool {id: #{id}}) RETURN tool"
   end
 
   def get_delete_statement(id) do
-    "MATCH (tool:Tool) WHERE tool.id = #{id} DELETE tool"
+    "MATCH (t:Tool {id: #{id}}) \
+      OPTIONAL MATCH (t)-[r]-(f)-[r2]-() \
+      DELETE t, r, f, r2"
   end
 
   def get_update_statement(tool) do
@@ -37,12 +44,12 @@ defmodule LooksLikeANailBackend.Tool do
     subTitle = Map.get(tool, "subTitle")
     description = Map.get(tool, "description")
     keywords = Map.get(tool, "keywords")
-    "MATCH (tool:Tool {id: #{id}}) " <>
-    "SET tool.title = \"#{title}\", " <>
-    "tool.subTitle = \"#{subTitle}\", " <>
-    "tool.description = \"#{description}\", " <>
-    "tool.updated = timestamp() " <>
-    "RETURN tool"
+    "MATCH (tool:Tool {id: #{id}}) \
+    SET tool.title = \"#{title}\", \
+      tool.subTitle = \"#{subTitle}\", \
+      tool.description = \"#{description}\", \
+      tool.updated = timestamp() \
+    RETURN tool"
   end
 
   @doc """
