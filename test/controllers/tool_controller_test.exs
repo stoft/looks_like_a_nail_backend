@@ -43,21 +43,21 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     assert response == "Page not found"
   end
 
-  # test "create one entry", %{conn: conn} do
-  #   entry = %{tool: %{id: 1,
-  #     title: "Elixir",
-  #     subTitle: "Programming Language",
-  #     description: "A functional programming language " <>
-  #       "standing on the shoulders of giants.",
-  #     updated: "2015-07-16T15:46:53.023+0000",
-  #     created: "2015-07-16T15:46:53.023+0000",
-  #     keywords: ["functional", "programming", "erlang"]}}
-  #     # features: [1,2,3]}}
-  #   conn = post conn, tool_path(conn, :create, entry)
-  #   response = json_response(conn, 200)
-  #   assert response |> Map.has_key?("tool")
-  #   # assert json_response(conn, 200) |> Map.has_key?("tools")
-  # end
+  test "create one entry", %{conn: conn} do
+    entry = %{tool: %{title: "Elixir",
+      subTitle: "Programming Language",
+      description: "A functional programming language " <>
+        "standing on the shoulders of giants.",
+      updated: "2015-07-16T15:46:53.023+0000",
+      created: "2015-07-16T15:46:53.023+0000",
+      keywords: ["functional", "programming", "erlang"]}}
+      # features: [1,2,3]}}
+    conn = post conn, tool_path(conn, :create, entry)
+    response = json_response(conn, 200)
+    assert response |> Map.has_key?("tool")
+    id = response |> Map.get("tool") |> Map.get("id")
+    TestDBHelper.delete_single_node(id)
+  end
 
   test "update one entry", %{conn: conn, id1: id} do
     entry = %{tool: %{id: id,
@@ -84,11 +84,13 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     conn = put conn, tool_path(conn, :update, id, entry)
     response = json_response(conn, 200)
     assert response |> Map.has_key?("tool")
-    # assert json_response(conn, 200) |> Map.has_key?("tools")
   end
 
   test "delete one entry", %{conn: conn} do
-
+    id = TestDBHelper.create_single_node("Tool") |> hd
+    conn = delete conn, tool_path(conn, :delete, id)
+    response = json_response(conn, 200)
+    assert response == %{"tool" => %{}}
   end
 
 end
