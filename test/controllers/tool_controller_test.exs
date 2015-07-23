@@ -11,6 +11,11 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
   #   keywords: ["key", "word"], insert_at: "", updated_at: ""}
   # @invalid_attrs %{}
 
+  setup_all do
+    LooksLikeANailBackend.TestDBHelper.setup_db
+    :ok
+  end
+
   setup do
     conn = conn() |> put_req_header("accept", "application/json")
     {:ok, conn: conn}
@@ -23,10 +28,10 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
   end
 
   test "show one entry", %{conn: conn} do
-    id = 101
-    expected = %{ "tool" => %{"id"=> 101,
-      "title" => "Java", "subTitle" => "Programming Language",
-      "description" => "JavaDescription"}}
+    id = 105
+    expected = %{ "tool" => %{"id"=> id,
+      "title" => "Postgres", "subTitle" => "Database",
+      "description" => "PostgresDescription"}}
     conn = get conn, tool_path(conn, :show, id)
     response = json_response(conn, 200)
     {actual, _} = Dict.split(response["tool"], Dict.keys(expected["tool"]))
@@ -82,7 +87,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
   end
 
   test "delete one entry", %{conn: conn} do
-    id = 106 # MySQL
+    id = 101 # Java
     conn = delete conn, tool_path(conn, :delete, id)
     response = json_response(conn, 200)
     assert response == %{"tool" => %{}}

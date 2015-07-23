@@ -5,4 +5,4 @@ ExUnit.start
 # Mix.Task.run "ecto.migrate", ["--quiet"]
 # Ecto.Adapters.SQL.begin_test_transaction(LooksLikeANailBackend.Repo)
 
-LooksLikeANailBackend.TestDBHelper.setup_db
+# LooksLikeANailBackend.TestDBHelper.setup_db

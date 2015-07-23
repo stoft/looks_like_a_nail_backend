@@ -21,9 +21,12 @@ defmodule LooksLikeANailBackend.TaskControllerTest do
   end
 
   test "show one entry", %{conn: conn} do
-    conn = get conn, task_path(conn, :show, 50)
+    expected = %{"task" => %{"title" => "Building",
+      "subTitle" => "Task", "description" => "BuildingDescription"}}
+    conn = get conn, task_path(conn, :show, 201)
     response = json_response(conn, 200)
-    assert response |> Map.has_key?("task")
+    {actual, _} = Dict.split(response["task"], Dict.keys(expected["task"]))
+    assert expected === %{"task" => actual}
   end
 
   # test "create one entry", %{conn: conn} do

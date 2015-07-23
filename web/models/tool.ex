@@ -29,7 +29,7 @@ defmodule LooksLikeANailBackend.Tool do
     # OPTIONAL MATCH (tool)-[ri:IMPLEMENTS]->\
     # (feature:Feature)-[rj:IS_CAPABLE_OF|:SUPPORTS]->\
     # (node) RETURN tool, collect(feature), collect(node)"
-    "MATCH (tool:Tool {id: #{id}}) RETURN tool"
+    "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
   end
 
   # def parse_rows(list, :get) do
@@ -45,8 +45,8 @@ defmodule LooksLikeANailBackend.Tool do
   
 
   def get_delete_statement(id) do
-    "MATCH (t:Tool {id: #{id}}) \
-      OPTIONAL MATCH (t)-[r]-(f)-[r2]-() \
+    "MATCH (t:Tool) WHERE t.id = #{id} \
+      OPTIONAL MATCH (t)-[r:IMPLEMENTS]->(f:Feature)-[r2:IS_CAPABLE_OF]->() \
       DELETE t, r, f, r2"
   end
 
