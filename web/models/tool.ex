@@ -25,12 +25,33 @@ defmodule LooksLikeANailBackend.Tool do
   end
 
   def get_get_statement(id) do
-    # "MATCH (tool:Tool) WHERE tool.id = #{id} \
-    # OPTIONAL MATCH (tool)-[ri:IMPLEMENTS]->\
-    # (feature:Feature)-[rj:IS_CAPABLE_OF|:SUPPORTS]->\
-    # (node) RETURN tool, collect(feature), collect(node)"
+    # MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature)-[isCapableOf:IS_CAPABLE_OF]->(task),(feature)-[supports:SUPPORTS]->(otherTool:Tool) RETURN tool, implements, feature, isCapableOf, task, supports, otherTool
     "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
   end
+
+  @spec map_get_from_neo(%{}) :: %{}
+  def map_get_from_neo(%{"data" => response}) do
+    rows = for item <- response, Map.has_key?(item, "row"), do: item
+    tool = for row <- rows, do: map_row_from_neo(row, %{})
+
+  end
+
+  @spec map_row_from_neo(%{}, %{}) :: %{}
+  def map_row_from_neo(%{"row" => row}, acc) do
+    import Map, only: [put: 3]
+
+    task = Enum.at(row, 4)
+    feature = Enum.at(row, 2) |> put("isCapableOf", [task["id"]])
+    tool = Enum.at(row, 0) |> put("implements", [feature["id"]])
+    capability = Enum.at(row, 3) |> put("feature", feature["id"]) |> put("task", task["id"])
+    implementation = Enum.at(row, 1) |> put("tool", tool["id"]) |> put("feature", feature["id"])
+    %{"tool" => tool,
+      "implements" => [implementation],
+      "features" => [feature],
+      "isCapableOf" => [capability],
+      "tasks" => [task]}
+  end
+  
 
   # def parse_rows(list, :get) do
   #   rows = for %{"row" => row} <- list, do: row
