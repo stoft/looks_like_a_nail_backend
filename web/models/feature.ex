@@ -44,6 +44,10 @@ defmodule LooksLikeANailBackend.Feature do
       "CREATE (feature:Feature {title: "Foo"}) SET feature.id = id(feature) RETURN feature"
   """
   def get_create_statement(map) do
+    # tool_id = Map.get(map, "toolId")
+    # task_id = Map.get(map, "taskId")
+    # "MATCH (tool:Tool {id: #{tool_id}}), (task:Task {id: #{task_id}}) CREATE path =(tool)-[:IMPLEMENTS]->(feature:Feature {#{feature}})-[:IS_CAPABLE_OF]->(task) SET feature.id = id(feature) RETURN path"
+
     feature = map
       |> Enum.map(fn({k,v})-> 
           "#{convert_key(k)}: #{convert_value(v)}" end)

@@ -25,12 +25,24 @@ defmodule LooksLikeANailBackend.Tool do
   end
 
   def get_get_statement(id) do
-    # "MATCH (tool:Tool {id: #{id}})\
+    # "MATCH (tool:Tool) WHERE tool.id = #{id} \
     # OPTIONAL MATCH (tool)-[ri:IMPLEMENTS]->\
     # (feature:Feature)-[rj:IS_CAPABLE_OF|:SUPPORTS]->\
-    # (node) RETURN tool, feature, node"
+    # (node) RETURN tool, collect(feature), collect(node)"
     "MATCH (tool:Tool {id: #{id}}) RETURN tool"
   end
+
+  # def parse_rows(list, :get) do
+  #   rows = for %{"row" => row} <- list, do: row
+  #   tool = rows |> hd |> hd
+  #   features = for row <- rows, do: Enum.at(row, 1)
+  #   tasks = for row <- rows, do: Enum.at(row, 2)
+  #   tool = Dict.put(tool, "features",
+  #     for f <- features, do: f["id"])
+  #   features = for f <- features, t <- tasks,
+  #     do: Dict.put(f, "task", t["id"])
+  # end
+  
 
   def get_delete_statement(id) do
     "MATCH (t:Tool {id: #{id}}) \
@@ -69,7 +81,8 @@ defmodule LooksLikeANailBackend.Tool do
     "RETURN tool"
   end
 
-  defp convert_key(key), do: to_string key
+  defp convert_key(key) when is_atom(key), do: to_string key
+  defp convert_key(key), do: String.to_atom key
   defp convert_value(value) when is_integer(value), do: value
   defp convert_value(value), do: "\"#{to_string value}\""
     
