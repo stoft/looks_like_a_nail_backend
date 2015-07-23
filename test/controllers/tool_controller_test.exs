@@ -11,11 +11,6 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
   #   keywords: ["key", "word"], insert_at: "", updated_at: ""}
   # @invalid_attrs %{}
 
-  setup_all do
-    TestDBHelper.setup_db :tool_feature_task
-    :ok
-  end
-
   setup do
     conn = conn() |> put_req_header("accept", "application/json")
     {:ok, conn: conn}
