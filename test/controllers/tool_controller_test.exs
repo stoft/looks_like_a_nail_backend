@@ -1,9 +1,6 @@
 defmodule LooksLikeANailBackend.ToolControllerTest do
   use LooksLikeANailBackend.ConnCase, async: true
 
-  alias LooksLikeANailBackend.Tool
-  alias LooksLikeANailBackend.TestDBHelper
-
   @moduletag :external
 
   # @valid_attrs %{description: "some content",
@@ -40,7 +37,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
   end
 
   test "try to show one non-existent entry", %{conn: conn} do
-    conn = get conn, tool_path(conn, :show, 0)
+    conn = get conn, tool_path(conn, :show, -1)
     response = json_response(conn, 404)
     assert response == "Page not found"
   end
