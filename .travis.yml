@@ -11,6 +11,9 @@ deploy:
   app: looks-like-a-nail-backend
   repo: stoft/looks-like-a-nail-backend
   strategy: git
+branches:
+  only:
+    - master
 script:
   - mix test --exclude external:true
 notifications:
