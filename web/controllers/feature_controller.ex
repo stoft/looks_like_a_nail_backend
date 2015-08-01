@@ -3,26 +3,26 @@ defmodule LooksLikeANailBackend.FeatureController do
 
   alias LooksLikeANailBackend.Feature
 
-  def index(conn, _params) do
-    features = Neo4J.Repo.all!(Feature)
-    if(features != nil) do
-      render conn, :index, features: features
-    else
-      render conn, :index, features: []
-    end
-  end
+  # def index(conn, _params) do
+  #   features = Neo4J.Repo.all!(Feature)
+  #   if(features != nil) do
+  #     render conn, :index, features: features
+  #   else
+  #     render conn, :index, features: []
+  #   end
+  # end
 
-  def show(conn, %{"id" => id}) do
-    id = String.to_integer(id)
-    feature = Neo4J.Repo.get!(Feature, id)
-    if(feature != nil) do
-      render conn, :show, feature: feature
-    else
-      conn
-      |> put_status(:not_found)
-      |> render(LooksLikeANailBackend.ErrorView, "404.json")
-    end
-  end
+  # def show(conn, %{"id" => id}) do
+  #   id = String.to_integer(id)
+  #   feature = Neo4J.Repo.get!(Feature, id)
+  #   if(feature != nil) do
+  #     render conn, :show, feature: feature
+  #   else
+  #     conn
+  #     |> put_status(:not_found)
+  #     |> render(LooksLikeANailBackend.ErrorView, "404.json")
+  #   end
+  # end
   
   def create(conn, %{"feature" => feature}) do
     feature = Neo4J.Repo.create_node!(Feature, feature)

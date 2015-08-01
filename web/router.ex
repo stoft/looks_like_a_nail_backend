@@ -27,7 +27,9 @@ defmodule LooksLikeANailBackend.Router do
 
     resources "/tools", ToolController
     resources "/tasks", TaskController
-    resources "/features", FeatureController
+    resources "/features", FeatureController, only: [:create, :update, :delete]
+    resources "/implements", ImplementsController, only: [:create]
+    # resources "/is-capable-of", IsCapableOfController, only: [:create, :delete]
   end
 
   def func_plug(conn, opts) do
