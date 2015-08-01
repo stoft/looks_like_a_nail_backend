@@ -5,10 +5,10 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
 
   @moduletag :external
 
-  # @valid_attrs %{description: "some content",
-  #   title: "title", sub_title: "sub_title",
-  #   keywords: ["key", "word"], insert_at: "", updated_at: ""}
-  # @invalid_attrs %{}
+  @valid_attrs %{description: "some content",
+    title: "title", sub_title: "sub_title",
+    keywords: ["key", "word"], insert_at: "", updated_at: ""}
+  @invalid_attrs %{}
 
   setup_all do
     LooksLikeANailBackend.TestDBHelper.setup_db
@@ -108,6 +108,16 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     conn = delete conn, tool_path(conn, :delete, id)
     response = json_response(conn, 200)
     assert response == %{"tool" => %{}}
+  end
+
+  test "double quotes are escaped correctly when PUT" do
+    input = %{tool: %{created: "2015-07-21T23:52:06.931Z", description: "DescriptionEndingWithDoubleQuote\"", subTitle: "Application", title: "TortoiseSVN", updated: "2015-07-29T18:39:22.104Z"}}
+    expected =  %{"created" => "2015-08-01T20:13:22.412Z", "description" => "DescriptionEndingWithDoubleQuote\"",
+             "id" => 102, "subTitle" => "Application", "title" => "TortoiseSVN",
+             "updated" => "2015-08-01T21:47:23.063Z"}
+    conn = put conn, tool_path(conn, :update, 102, input)
+    actual = json_response(conn, 200)
+    assert_equals_except expected, actual, ["updated", "created"]
   end
 
 end

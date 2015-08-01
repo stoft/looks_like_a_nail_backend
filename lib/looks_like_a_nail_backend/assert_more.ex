@@ -21,7 +21,7 @@ defmodule AssertMore do
   @spec assert_equals_except(any, any, list) :: boolean
   def assert_equals_except(expected, actual, keys \\ [])
   
-  def assert_equals_except(expected, actual, keys) when is_map(expected) and is_map(actual) do
+  def assert_equals_except(%{} = expected, %{} = actual, keys) do
     Enum.map(expected, fn({k,v})->
       except_or_assert(k, v, actual, keys)
     end)

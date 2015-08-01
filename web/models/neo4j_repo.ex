@@ -42,9 +42,24 @@ defmodule Neo4J.Repo do
   end
 
   def update!(type, node) do
-    statement = apply(type, :get_update_statement, [node])
-    data = do_cypher_statements!([statement])
+    {statement, parameters} = apply(type, :get_update_statement, [node])
+    data = do_cypher_statements_with_params!([{statement, parameters}])
     convert_to_type(data, type) |> return_single_or_nil
+  end
+
+  def do_cypher_statements_with_params!(statements_and_parameters) do
+    url = compose_url(["transaction/commit"])
+    json = Poison.encode!(embed_statements_and_params(statements_and_parameters))
+    headers = %{"Content-Type" => "application/json"}
+    Logger.info "Request to Neo4J: " <> String.slice(json, 0, 500)
+    response = HTTPoison.post!(url, json, headers, [hackney: get_basic_auth_info])
+    json_body = Map.get(response, :body)
+    Logger.info "Response from Neo4J: " <> String.slice(json_body, 0, 500)
+    body = json_body |> Poison.decode!
+    if(Map.get(body, "errors") != []) do
+      raise Neo4JError, Map.get(body, "errors")
+    end
+    body
   end
 
   def do_cypher_statements!(statements) do
@@ -60,6 +75,11 @@ defmodule Neo4J.Repo do
       raise Neo4JError, Map.get(body, "errors")
     end
     body
+  end
+
+  defp embed_statements_and_params(list) do
+    list = for {statement, parameters} <- list, do: %{statement: statement, parameters: parameters}
+    %{statements: list}
   end
 
   defp embed_statements(statements) do

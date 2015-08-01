@@ -31,64 +31,6 @@ defmodule LooksLikeANailBackend.Tool do
     # "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) OPTIONAL MATCH (tool)<-[:SUPPORTS]-(ff:Feature) RETURN {tool: tool, implements: collect(distinct f.id), supports: collect(distinct ff.id)}"
   end
 
-  # @spec map_get_from_neo(%{}) :: %{}
-  # def map_get_from_neo(%{"data" => response}) do
-  #   import Map, only: [put: 3, get: 2]
-  #   rows = for item <- response, Map.has_key?(item, "row"), do: item
-  #   tool_rows = for row <- rows, do: map_row_from_neo(row)
-  #   unify_tool(tool_rows)
-  # end
-
-  # defp unify_tool([tool|tools]) do
-  #   import Map, only: [put: 3, get: 2]
-  #   # IO.inspect tool
-  #   tool = Enum.reduce(tools, tool, fn(next, tool)->
-  #     tool = update_in(tool, [:tool, :implements],
-  #       &((&1 ++ get_in(next, [:tool, :implements])) |> Enum.uniq))
-  #     tool = update_in(tool, [:implements],
-  #       &((&1 ++ get_in(next, [:implements]))|> Enum.uniq))
-  #     tool = update_in(tool, [:features],
-  #       &((&1 ++ get_in(next, [:features]))|> Enum.uniq))
-  #     tool = update_in(tool, [:isCapableOf],
-  #       &((&1 ++ get_in(next, [:isCapableOf]))|>Enum.uniq))
-  #     tool = update_in(tool, [:tasks],
-  #       &((&1 ++ get_in(next, [:tasks]))|> Enum.uniq))
-  #   end)
-  # end
-
-  # @spec map_row_from_neo(%{}) :: %{}
-  # def map_row_from_neo(%{"row" => row}) do
-  #   import Map, only: [put: 3]
-
-  #   task = Enum.at(row, 4) |> convert_keys_to_atoms
-  #   feature = Enum.at(row, 2) |> convert_keys_to_atoms
-  #     |> put(:isCapableOf, [task[:id]])
-
-  #   tool = Enum.at(row, 0) |> convert_keys_to_atoms
-  #     |> put(:implements, [feature[:id]])
-    
-  #   capability = Enum.at(row, 3) |> convert_keys_to_atoms
-  #     |> put(:feature, feature[:id]) |> put(:task, task[:id])
-    
-  #   implementation = Enum.at(row, 1) |> convert_keys_to_atoms
-  #     |> put(:tool, tool[:id]) |> put(:feature, feature[:id])
-
-  #   %{:tool => convert_keys_to_atoms(tool),
-  #     :implements => [implementation],
-  #     :features => [feature],
-  #     :isCapableOf => [capability],
-  #     :tasks => [task]}
-  # end
-
-  # defp convert_keys_to_atoms(simple_map) do
-  #   Enum.reduce(simple_map, %{}, fn({k,v}, m) ->
-  #     cond do
-  #       is_atom(k) -> put_in(m, [k], v)
-  #       true -> put_in(m, [String.to_atom(k)], v)
-  #     end
-  #   end)
-  # end
-  
   def get_delete_statement(id) do
     "MATCH (t:Tool) WHERE t.id = #{id} \
       OPTIONAL MATCH (t)-[r:IMPLEMENTS]->(f:Feature)-[r2:IS_CAPABLE_OF]->() \
@@ -100,13 +42,10 @@ defmodule LooksLikeANailBackend.Tool do
     title = Map.get(tool, "title")
     subTitle = Map.get(tool, "subTitle")
     description = Map.get(tool, "description")
-    keywords = Map.get(tool, "keywords")
-    "MATCH (tool:Tool {id: #{id}}) \
-    SET tool.title = \"#{title}\", \
-      tool.subTitle = \"#{subTitle}\", \
-      tool.description = \"#{description}\", \
-      tool.updated = timestamp() \
-    RETURN tool"
+    # keywords = Map.get(tool, "keywords")
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp() RETURN tool"
+    parameters = %{id: id, title: title, subTitle: subTitle, description: description}
+    {statement, parameters}
   end
 
   @doc """
@@ -130,5 +69,5 @@ defmodule LooksLikeANailBackend.Tool do
   defp convert_key(key), do: String.to_atom key
   defp convert_value(value) when is_integer(value), do: value
   defp convert_value(value), do: "\"#{to_string value}\""
-    
+
 end
