@@ -22,19 +22,23 @@ defmodule LooksLikeANailBackend.Tool do
   # end
 
   def get_all_statement() do
-    "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[isCapableOf:IS_CAPABLE_OF]->(task) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, isCapableOf, task, supports, otherTool"
+    statement = "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[isCapableOf:IS_CAPABLE_OF]->(task) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, isCapableOf, task, supports, otherTool"
+    parameters = %{}
+    {statement, parameters}
   end
 
   def get_get_statement(id) do
-    "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[isCapableOf:IS_CAPABLE_OF]->(task) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, isCapableOf, task, supports, otherTool"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[isCapableOf:IS_CAPABLE_OF]->(task) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, isCapableOf, task, supports, otherTool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) OPTIONAL MATCH (tool)<-[:SUPPORTS]-(ff:Feature) RETURN {tool: tool, implements: collect(distinct f.id), supports: collect(distinct ff.id)}"
+    parameters = %{id: id}
+    {statement, parameters}
   end
 
   def get_delete_statement(id) do
-    "MATCH (t:Tool) WHERE t.id = #{id} \
-      OPTIONAL MATCH (t)-[r:IMPLEMENTS]->(f:Feature)-[r2:IS_CAPABLE_OF]->() \
-      DELETE t, r, f, r2"
+    statement = "MATCH (t:Tool) WHERE t.id = {id} OPTIONAL MATCH (t)-[r:IMPLEMENTS]->(f:Feature)-[r2:IS_CAPABLE_OF]->(), (f)-[s:SUPPORTS]->() DELETE t, r, f, r2, s"
+    parameters = %{id: id}
+    {statement, parameters}
   end
 
   def get_update_statement(tool) do
@@ -42,9 +46,9 @@ defmodule LooksLikeANailBackend.Tool do
     title = Map.get(tool, "title")
     subTitle = Map.get(tool, "subTitle")
     description = Map.get(tool, "description")
-    # keywords = Map.get(tool, "keywords")
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp() RETURN tool"
-    parameters = %{id: id, title: title, subTitle: subTitle, description: description}
+    keywords = Map.get(tool, "keywords")
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp(), tool.keywords = {keywords} RETURN tool"
+    parameters = %{id: id, title: title, subTitle: subTitle, description: description, keywords: keywords}
     {statement, parameters}
   end
 
@@ -55,19 +59,12 @@ defmodule LooksLikeANailBackend.Tool do
       "CREATE (tool:Tool {title: "Foo"}) SET tool.id = id(tool) RETURN tool"
   """
   def get_create_statement(map) do
-    tool = map
-      |> Enum.map(fn({k,v})-> 
-          "#{convert_key(k)}: #{convert_value(v)}" end)
-      |> Enum.join(", ")
-    "CREATE (tool:Tool {#{tool}}) " <>
+    parameters = %{props: map}
+    statement = "CREATE (tool:Tool {props}) " <>
     "SET tool.id = id(tool), " <>
     "tool.updated = timestamp(), tool.created = timestamp() " <>
     "RETURN tool"
+    {statement, parameters}
   end
-
-  defp convert_key(key) when is_atom(key), do: to_string key
-  defp convert_key(key), do: String.to_atom key
-  defp convert_value(value) when is_integer(value), do: value
-  defp convert_value(value), do: "\"#{to_string value}\""
 
 end

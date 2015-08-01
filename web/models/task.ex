@@ -19,15 +19,21 @@ defmodule LooksLikeANailBackend.Task do
   # end
 
   def get_all_statement() do
-    "MATCH (task:Task) RETURN task"
+    statement = "MATCH (task:Task) RETURN task"
+    parameters = %{}
+    {statement, parameters}
   end
 
   def get_get_statement(id) do
-    "MATCH (task:Task {id: #{id}}) RETURN task"
+    statement = "MATCH (task:Task) WHERE task.id = {id} RETURN task"
+    parameters = %{id: id}
+    {statement, parameters}
   end
 
   def get_delete_statement(id) do
-    "MATCH (task:Task) WHERE task.id = #{id} DELETE task"
+    statement = "MATCH (task:Task) WHERE task.id = {id} DELETE task"
+    parameters = %{id: id}
+    {statement, parameters}
   end
 
   def get_update_statement(task) do
@@ -36,12 +42,15 @@ defmodule LooksLikeANailBackend.Task do
     subTitle = Map.get(task, "subTitle")
     description = Map.get(task, "description")
     keywords = Map.get(task, "keywords")
-    "MATCH (task:Task {id: #{id}}) " <>
-    "SET task.title = \"#{title}\", " <>
-    "task.subTitle = \"#{subTitle}\", " <>
-    "task.description = \"#{description}\", " <>
-    "task.updated = timestamp() " <>
+    statement = "MATCH (task:Task) WHERE task.id = {id} " <>
+    "SET task.title = {title}, " <>
+    "task.subTitle = {subTitle}, " <>
+    "task.description = {description}, " <>
+    "task.updated = timestamp(), " <>
+    "task.keywords = {keywords} " <>
     "RETURN task"
+    parameters = %{id: id, title: title, subTitle: subTitle, description: description, keywords: keywords}
+    {statement, parameters}
   end
 
   @doc """
@@ -51,18 +60,11 @@ defmodule LooksLikeANailBackend.Task do
       "CREATE (task:Task {title: "Foo"}) SET task.id = id(task) RETURN task"
   """
   def get_create_statement(map) do
-    task = map
-      |> Enum.map(fn({k,v})-> 
-          "#{convert_key(k)}: #{convert_value(v)}" end)
-      |> Enum.join(", ")
-    "CREATE (task:Task {#{task}}) " <>
+    parameters = %{props: map}
+    statement = "CREATE (task:Task {props}) " <>
     "SET task.id = id(task), " <>
     "task.updated = timestamp(), task.created = timestamp() " <>
     "RETURN task"
-  end
-
-  defp convert_key(key), do: to_string key
-  defp convert_value(value) when is_integer(value), do: value
-  defp convert_value(value), do: "\"#{to_string value}\""
-    
+    {statement, parameters}
+  end    
 end

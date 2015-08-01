@@ -13,6 +13,7 @@ defmodule LooksLikeANailBackend.FeatureController do
   end
 
   def show(conn, %{"id" => id}) do
+    id = String.to_integer(id)
     feature = Neo4J.Repo.get!(Feature, id)
     if(feature != nil) do
       render conn, :show, feature: feature
@@ -40,6 +41,7 @@ defmodule LooksLikeANailBackend.FeatureController do
   end
 
   def update(conn, %{"id" => id, "feature" => feature_params}) do
+    id = String.to_integer(id)
     feature = Neo4J.Repo.get!(Feature, id)
     if(feature != nil) do
       feature_params = Map.put(feature_params, "id", id)
@@ -64,6 +66,7 @@ defmodule LooksLikeANailBackend.FeatureController do
   end
 
   def delete(conn, %{"id" => id}) do
+    id = String.to_integer(id)
     feature = Neo4J.Repo.get!(Feature, id)
     if(feature != nil) do
       Neo4J.Repo.delete!(Feature, id)

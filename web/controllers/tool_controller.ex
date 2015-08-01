@@ -67,6 +67,7 @@ defmodule LooksLikeANailBackend.ToolController do
   end
 
   def delete(conn, %{"id" => id}) do
+    id = String.to_integer(id)
     tool = Neo4J.Repo.get!(Tool, id)
     if(tool != nil) do
       Neo4J.Repo.delete!(Tool, id)

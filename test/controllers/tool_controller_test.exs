@@ -92,10 +92,10 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     entry = %{tool: %{id: id,
       title: "MySQL",
       subTitle: "Database",
-      description: "MySQL a free/open source database owned by an evil empire."}
+      description: "MySQL a free/open source database owned by an \"evil empire\"."}
     }
     expected = %{"created" => "2015-08-01T11:37:08.910Z",
-      "description" => "MySQL a free/open source database owned by an evil empire.",
+      "description" => "MySQL a free/open source database owned by an \"evil empire\".",
       "id" => 106, "subTitle" => "Database", "title" => "MySQL",
       "updated" => "2015-08-01T16:03:10.902Z"}
     conn = put conn, tool_path(conn, :update, id, entry)
@@ -109,15 +109,4 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     response = json_response(conn, 200)
     assert response == %{"tool" => %{}}
   end
-
-  test "double quotes are escaped correctly when PUT" do
-    input = %{tool: %{created: "2015-07-21T23:52:06.931Z", description: "DescriptionEndingWithDoubleQuote\"", subTitle: "Application", title: "TortoiseSVN", updated: "2015-07-29T18:39:22.104Z"}}
-    expected =  %{"created" => "2015-08-01T20:13:22.412Z", "description" => "DescriptionEndingWithDoubleQuote\"",
-             "id" => 102, "subTitle" => "Application", "title" => "TortoiseSVN",
-             "updated" => "2015-08-01T21:47:23.063Z"}
-    conn = put conn, tool_path(conn, :update, 102, input)
-    actual = json_response(conn, 200)
-    assert_equals_except expected, actual, ["updated", "created"]
-  end
-
 end

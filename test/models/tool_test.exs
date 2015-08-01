@@ -6,7 +6,8 @@ defmodule LooksLikeANailBackend.ToolTest do
   # doctest LooksLikeANailBackend.Tool
 
   test "get create statement" do
-    expected = "CREATE (tool:Tool {title: \"Foo\"}) SET tool.id = id(tool), tool.updated = timestamp(), tool.created = timestamp() RETURN tool"
+    expected = {"CREATE (tool:Tool {props}) SET tool.id = id(tool), tool.updated = timestamp(), tool.created = timestamp() RETURN tool",
+      %{props: %{title: "Foo"}}}
     assert expected == Tool.get_create_statement(%{title: "Foo"})
   end
 
@@ -16,8 +17,8 @@ defmodule LooksLikeANailBackend.ToolTest do
       "title" => "TortoiseSVN",
       "updated" => "2015-07-29T18:39:22.104Z"}
 
-    expected = {"MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp() RETURN tool",
-      %{description: "DescriptionEndingWithDoubleQuote\"", id: nil, subTitle: "Application", title: "TortoiseSVN"}}
+    expected = {"MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp(), tool.keywords = {keywords} RETURN tool",
+            %{description: "DescriptionEndingWithDoubleQuote\"", id: nil, keywords: nil, subTitle: "Application", title: "TortoiseSVN"}}
     actual = Tool.get_update_statement(input)
     assert expected === actual
   end

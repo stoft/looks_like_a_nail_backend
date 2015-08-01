@@ -13,15 +13,21 @@ defmodule LooksLikeANailBackend.Feature do
   @optional_fields ~w(subTitle keywords description)
 
   def get_all_statement() do
-    "MATCH (feature:Feature) RETURN feature"
+    statement = "MATCH (feature:Feature) RETURN feature"
+    parameters = %{}
+    {statement, parameters}
   end
 
   def get_get_statement(id) do
-    "MATCH (feature:Feature {id: #{id}}) RETURN feature"
+    statement = "MATCH (feature:Feature) WHERE feature.id = {id} RETURN feature"
+    parameters = %{id: id}
+    {statement, parameters}
   end
 
   def get_delete_statement(id) do
-    "MATCH (feature:Feature) WHERE feature.id = #{id} DELETE feature"
+    statement = "MATCH (feature:Feature) WHERE feature.id = {id} DELETE feature"
+    parameters = %{id: id}
+    {statement, parameters}
   end
 
   def get_update_statement(feature) do
@@ -30,37 +36,24 @@ defmodule LooksLikeANailBackend.Feature do
     subTitle = Map.get(feature, "subTitle")
     description = Map.get(feature, "description")
     keywords = Map.get(feature, "keywords")
-    "MATCH (feature:Feature {id: #{id}}) " <>
-    "SET feature.title = \"#{title}\", " <>
-    "feature.subTitle = \"#{subTitle}\", " <>
-    "feature.description = \"#{description}\", " <>
-    "feature.updated = timestamp() " <>
+    statement = "MATCH (feature:Feature) WHERE feature.id = {id} " <>
+    "SET feature.title = {title}, " <>
+    "feature.subTitle = {subTitle}, " <>
+    "feature.description = {description}, " <>
+    "feature.updated = timestamp(), " <>
+    "feature.keywords = {keywords} " <>
     "RETURN feature"
+    parameters = %{id: id, title: title, subTitle: subTitle, description: description, keywords: keywords}
+    {statement, parameters}
   end
 
-  @doc """
-  Generates a create statement from a given Feature.
-
-      iex> LooksLikeANailBackend.Feature.get_create_statement(%{title: "Foo"})
-      "CREATE (feature:Feature {title: "Foo"}) SET feature.id = id(feature) RETURN feature"
-  """
   def get_create_statement(map) do
-    # tool_id = Map.get(map, "toolId")
-    # task_id = Map.get(map, "taskId")
-    # "MATCH (tool:Tool {id: #{tool_id}}), (task:Task {id: #{task_id}}) CREATE path =(tool)-[:IMPLEMENTS]->(feature:Feature {#{feature}})-[:IS_CAPABLE_OF]->(task) SET feature.id = id(feature) RETURN path"
-
-    feature = map
-      |> Enum.map(fn({k,v})-> 
-          "#{convert_key(k)}: #{convert_value(v)}" end)
-      |> Enum.join(", ")
-    "CREATE (feature:Feature {#{feature}}) " <>
+    statement = "CREATE (feature:Feature {props}) " <>
     "SET feature.id = id(feature), " <>
     "feature.updated = timestamp(), feature.created = timestamp() " <>
     "RETURN feature"
+    parameters = %{props: map}
+    {statement, parameters}
   end
-
-  defp convert_key(key), do: to_string key
-  defp convert_value(value) when is_integer(value), do: value
-  defp convert_value(value), do: "\"#{to_string value}\""
 
 end

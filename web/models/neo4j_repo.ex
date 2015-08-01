@@ -16,28 +16,28 @@ defmodule Neo4J.Repo do
   end
 
   def all!(type) do
-    statement = apply(type, :get_all_statement, [])
-    data = do_cypher_statements!([statement])
+    {statement, parameters} = apply(type, :get_all_statement, [])
+    data = do_cypher_statements_with_params!([{statement, parameters}])
     Mapper.map_all_response(type, data)
     # convert_to_type(data, type)
   end
 
   def get!(type, id) do
-    statement = apply(type, :get_get_statement, [id])
-    data = do_cypher_statements!([statement])
+    {statement, parameters} = apply(type, :get_get_statement, [id])
+    data = do_cypher_statements_with_params!([{statement, parameters}])
     Mapper.map_get_response(type, data) |> return_single_or_nil
     # convert_to_type(data, type) |> return_single_or_nil
   end
   
   def create_node!(type, node) do
-    statement = apply(type, :get_create_statement, [node])
-    data = do_cypher_statements!([statement])
+    {statement, parameters} = apply(type, :get_create_statement, [node])
+    data = do_cypher_statements_with_params!([{statement, parameters}])
     convert_to_type(data, type) |> return_single_or_nil
   end
 
   def delete!(type, node) do
-    statement = apply(type, :get_delete_statement, [node])
-    do_cypher_statements!([statement])
+    {statement, parameters} = apply(type, :get_delete_statement, [node])
+    do_cypher_statements_with_params!([{statement, parameters}])
     %{}
   end
 
