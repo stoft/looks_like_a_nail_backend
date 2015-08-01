@@ -1,13 +1,14 @@
 defmodule LooksLikeANailBackend.TaskControllerTest do
   use LooksLikeANailBackend.ConnCase, async: true
 
+  import AssertMore
   alias LooksLikeANailBackend.Task
 
   @moduletag :external
 
   @valid_attrs %{description: "some content",
     title: "title", sub_title: "sub_title",
-    keywords: ["key", "word"], insert_at: "", updated_at: ""}
+    keywords: ["key", "word"], inserted: "", updated: ""}
   @invalid_attrs %{}
 
   setup do
@@ -17,16 +18,15 @@ defmodule LooksLikeANailBackend.TaskControllerTest do
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, task_path(conn, :index)
-    assert json_response(conn, 200) |> IO.inspect |> Map.has_key?("tasks")
+    assert json_response(conn, 200) |> Map.has_key?("tasks")
   end
 
   test "show one entry", %{conn: conn} do
     expected = %{"task" => %{"title" => "Building",
       "subTitle" => "Task", "description" => "BuildingDescription"}}
     conn = get conn, task_path(conn, :show, 201)
-    response = json_response(conn, 200)
-    {actual, _} = Dict.split(response["task"], Dict.keys(expected["task"]))
-    assert expected === %{"task" => actual}
+    IO.inspect response = json_response(conn, 200)
+    assert_equals_except expected, response, ["updated", "created"]
   end
 
   # test "create one entry", %{conn: conn} do

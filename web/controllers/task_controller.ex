@@ -2,7 +2,6 @@ defmodule LooksLikeANailBackend.TaskController do
   use LooksLikeANailBackend.Web, :controller
 
   alias LooksLikeANailBackend.Task
-  alias LooksLikeANailBackend.Utils
 
   def index(conn, _params) do
     tasks = Neo4J.Repo.all!(Task)

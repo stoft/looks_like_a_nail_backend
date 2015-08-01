@@ -4,6 +4,7 @@ defmodule LooksLikeANailBackend.Feature do
     title: nil,
     subTitle: "",
     keywords: [],
+    isCapableOf: [],
     description: "",
     created: "",
     updated: "")

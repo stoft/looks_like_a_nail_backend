@@ -2,7 +2,6 @@ defmodule LooksLikeANailBackend.ToolController do
   use LooksLikeANailBackend.Web, :controller
 
   alias LooksLikeANailBackend.Tool
-  alias LooksLikeANailBackend.Utils
 
   def index(conn, _params) do
     tools = Neo4J.Repo.all!(Tool)

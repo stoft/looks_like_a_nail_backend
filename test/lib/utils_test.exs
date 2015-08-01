@@ -8,5 +8,5 @@ defmodule LooksLikeANailBackend.UtilsTest do
     actual = LooksLikeANailBackend.Utils.convert_msecs_to_iso(1437256886419)
     assert expected == actual
   end
-  
+
 end

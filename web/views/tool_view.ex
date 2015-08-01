@@ -7,8 +7,7 @@ defmodule LooksLikeANailBackend.ToolView do
   end
 
   def render("show.json", %{tool: tool}) do
-    # %{data: render_one(tool, "tool.json")}
-    %{tool: tool}
+    tool
   end
 
   def render("new.json", %{tool: tool}) do

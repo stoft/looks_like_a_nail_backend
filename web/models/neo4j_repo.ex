@@ -2,6 +2,9 @@ defmodule Neo4J.Repo do
   require Logger
 
   alias LooksLikeANailBackend.Utils
+  alias LooksLikeANailBackend.Mapper
+
+  # @resultDataContents "\"resultDataContents\" : [\"graph\"]"
 
   defmodule Neo4JError do
     defexception [:message]
@@ -15,13 +18,15 @@ defmodule Neo4J.Repo do
   def all!(type) do
     statement = apply(type, :get_all_statement, [])
     data = do_cypher_statements!([statement])
-    convert_to_type(data, type)
+    Mapper.map_all_response(type, data)
+    # convert_to_type(data, type)
   end
 
   def get!(type, id) do
     statement = apply(type, :get_get_statement, [id])
     data = do_cypher_statements!([statement])
-    convert_to_type(data, type) |> return_single_or_nil
+    Mapper.map_get_response(type, data) |> return_single_or_nil
+    # convert_to_type(data, type) |> return_single_or_nil
   end
   
   def create_node!(type, node) do
@@ -32,7 +37,7 @@ defmodule Neo4J.Repo do
 
   def delete!(type, node) do
     statement = apply(type, :get_delete_statement, [node])
-    data = do_cypher_statements!([statement])
+    do_cypher_statements!([statement])
     %{}
   end
 
@@ -117,4 +122,5 @@ defmodule Neo4J.Repo do
 
   defp return_single_or_nil([h|_]), do: h
   defp return_single_or_nil([]), do: nil
+  defp return_single_or_nil(val), do: val
 end

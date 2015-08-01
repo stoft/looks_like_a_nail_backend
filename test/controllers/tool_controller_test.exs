@@ -1,6 +1,8 @@
 defmodule LooksLikeANailBackend.ToolControllerTest do
   use LooksLikeANailBackend.ConnCase, async: true
 
+  import AssertMore
+
   @moduletag :external
 
   # @valid_attrs %{description: "some content",
@@ -26,14 +28,25 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
 
   test "show one entry", %{conn: conn} do
     id = 105
-    expected = %{ "tool" => %{"id"=> id,
-      "title" => "Postgres", "subTitle" => "Database",
-      "description" => "PostgresDescription"}}
+    expected = %{
+      "features" => [%{"created" => "2015-08-01T10:27:56.764Z", "id" => 303,
+        "isCapableOf" => [3032], "supports" => [],
+        "title" => "postgresDatastorage",
+        "updated" => "2015-08-01T10:27:56.764Z"}],
+      "implements" => [%{"feature" => 303, "id" => 3031, "tool" => 105}],
+      "isCapableOf" => [%{"feature" => 303, "id" => 3032, "task" => 205}],
+      "supports" => [],
+      "tasks" => [%{"created" => "2015-08-01T10:27:56.764Z",
+        "description" => "DatastorageDescription", "id" => 205,
+        "subTitle" => "Task", "title" => "Datastorage",
+        "updated" => "2015-08-01T10:27:56.764Z"}],
+      "tool" => %{"created" => "2015-08-01T10:27:56.764Z",
+        "description" => "PostgresDescription", "id" => 105, "implements" => [3031],
+        "subTitle" => "Database", "title" => "Postgres",
+        "updated" => "2015-08-01T10:27:56.764Z"}, "tools" => []}
     conn = get conn, tool_path(conn, :show, id)
-    response = json_response(conn, 200)
-    {actual, _} = Dict.split(response["tool"], Dict.keys(expected["tool"]))
-    actual = %{"tool" => actual}
-    assert expected === actual
+    actual = json_response(conn, 200)
+    assert_equals_except expected, actual, ["updated", "created"]
   end
 
   test "try to show one non-existent entry", %{conn: conn} do
@@ -54,7 +67,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     conn = post conn, tool_path(conn, :create, entry)
     response = json_response(conn, 200)
     assert response |> Map.has_key?("tool")
-    id = response |> Map.get("tool") |> Map.get("id")
+    response |> Map.get("tool") |> Map.get("id")
   end
 
   test "update one entry", %{conn: conn} do
@@ -65,10 +78,13 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
       description: "Elixir is a functional, concurrent, general-purpose programming language that runs on the Erlang virtual machine (BEAM). Elixir builds on top of Erlang to provide distributed, fault-tolerant, soft real-time, non-stop applications but also extends it to support metaprogramming with macros and polymorphism via protocols.",
       updated: "2015-07-16T15:46:53.023+0000",
       created: "2015-07-16T15:46:53.023+0000"}}
-      # features: [1,2,3]}}
+    expected = %{"created" => "2015-08-01T11:37:08.910Z",
+      "description" => "Elixir is a functional, concurrent, general-purpose programming language that runs on the Erlang virtual machine (BEAM). Elixir builds on top of Erlang to provide distributed, fault-tolerant, soft real-time, non-stop applications but also extends it to support metaprogramming with macros and polymorphism via protocols.",
+      "id" => 104, "subTitle" => "Programming Language", "title" => "Elixir",
+      "updated" => "2015-08-01T15:45:10.429Z"}
     conn = put conn, tool_path(conn, :update, id, entry)
     response = json_response(conn, 200)
-    assert response |> Map.has_key?("tool")
+    assert_equals_except expected, response, ["updated", "created"]
   end
 
   test "update one partial entry", %{conn: conn} do
@@ -78,9 +94,13 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
       subTitle: "Database",
       description: "MySQL a free/open source database owned by an evil empire."}
     }
+    expected = %{"created" => "2015-08-01T11:37:08.910Z",
+      "description" => "MySQL a free/open source database owned by an evil empire.",
+      "id" => 106, "subTitle" => "Database", "title" => "MySQL",
+      "updated" => "2015-08-01T16:03:10.902Z"}
     conn = put conn, tool_path(conn, :update, id, entry)
     response = json_response(conn, 200)
-    assert response |> Map.has_key?("tool")
+    assert_equals_except expected, response, ["updated", "created"]
   end
 
   test "delete one entry", %{conn: conn} do

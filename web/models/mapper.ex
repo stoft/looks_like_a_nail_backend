@@ -1,4 +1,7 @@
 defmodule LooksLikeANailBackend.Mapper do
+
+  alias LooksLikeANailBackend.Utils
+
   # alias LooksLikeANailBackend.Feature
   alias LooksLikeANailBackend.Tool
   # alias LooksLikeANailBackend.Task
@@ -13,9 +16,28 @@ defmodule LooksLikeANailBackend.Mapper do
             "SUPPORTS" => :supports,
             "otherTool" => :otherTool}
 
+  @datetimes [:updated, :created]
+
   @nodes [:feature, :tool, :task, :otherTool]
   @relationships [:implements, :isCapableOf, :supports]
 
+  def map_all_response(type, data) do
+    import Map, only: [get: 2]
+    case type do
+      # Tool -> map_entities(type, get(data, ["results", "data"]), get_in(data, ["results", "columns"]))
+      Tool -> map_entities(type, data |> get("results") |> hd |> get("data"), data |> get("results") |> hd |> get("columns"))
+      _ -> convert_to_type(data, type)
+    end
+  end
+
+  def map_get_response(type, data) do
+    import Map, only: [get: 2]
+    case type do
+      Tool -> map_single_entity(type, data |> get("results") |> hd |> get("data"), data |> get("results") |> hd |> get("columns"))
+      _ -> convert_to_type data, type
+    end
+  end
+  
   def map_entities(Tool, rows, columns) do
     tools = %{tools: [], implements: [], features: [], isCapableOf: [], tasks: [], supports: []}
     # rows = for row <- rows, do: map_one_row(Tool, row, columns)
@@ -41,18 +63,13 @@ defmodule LooksLikeANailBackend.Mapper do
       tool_id = get_in(hd(row), ["id"])
       Dict.update(acc, tool_id, [%{"row" => row}], &([%{"row" => row}] ++ &1))
     end)
-    # |> Enum.into([], fn({k, v}) -> v end)
   end
   
+  def map_single_entity(Tool, [], columns), do: nil
   
-
   def map_single_entity(Tool, rows, columns) do
-    # IO.puts "map_single_entity: "
-    # IO.inspect rows
     rows = for row <- rows, do: map_one_row(Tool, row, columns)
     tool = %{tool: [], implements: [], features: [], isCapableOf: [], tasks: [], supports: [], tools: []}
-
-    # IO.inspect rows
 
     tool = Enum.reduce(rows, tool, fn(row, acc)->
       get_and_put = fn(acc, row, put_key, get_key) ->
@@ -68,9 +85,6 @@ defmodule LooksLikeANailBackend.Mapper do
       |> get_and_put.(row, :supports, :supports)
       |> get_and_put.(row, :tools, :otherTool)
     end)
-
-    # IO.puts "tool: "
-    # IO.inspect tool
 
     tool |> put_in([:tool], unify_entity(tool[:tool], [:implements]))
     |> put_in([:features], unify_entity(tool[:features], [:isCapableOf, :supports]))
@@ -97,8 +111,6 @@ defmodule LooksLikeANailBackend.Mapper do
   end
 
   def map_one_row(Tool, %{"row" => row}, columns) do
-    # IO.puts "map_one_row: "
-    # IO.inspect row
     columns = for c <- columns, do: String.to_existing_atom(c)
 
     row = convert_keys_to_atoms row
@@ -148,13 +160,48 @@ defmodule LooksLikeANailBackend.Mapper do
     put_in %{}, [type], entity
   end
 
+  def convert_to_type(data, type) do
+    type_name = get_type_name(type)
+    name = fn(%{"columns" => list}) -> hd(list) == type_name end
+    data_list = data
+      |> Map.get("results")
+      |> Enum.filter(&name.(&1))
+      |> hd
+      |> Map.get("data")
+      |> Enum.map(fn(%{"row" => row}) -> convert_fields(hd(row)) end)
+    # return_single_or_list(data_list)
+  end
+
+  defp get_type_name(type) do
+    type |> to_string |> String.split(".")
+      |> Enum.reverse |> hd |> String.downcase
+  end
+
+  defp convert_fields(map) do
+    Enum.reduce(map, %{}, fn(pair,acc) ->
+      {k,v} = convert_field(pair)
+      Map.put(acc, k, v)
+    end)
+  end
+
+  defp convert_field({"created", value}) when is_integer(value) do
+    {:created, Utils.convert_msecs_to_iso(value)}
+  end
+  defp convert_field({"updated", value}) when is_integer(value) do
+    {:updated, Utils.convert_msecs_to_iso(value)}
+  end
+  defp convert_field({k,v}) do
+    {String.to_atom(k), v}
+  end
+
   defp convert_keys_to_atoms(map) when is_map(map) do
     Enum.reduce(map, %{}, fn({k,v}, m) ->
       v = convert_keys_to_atoms(v)
-      cond do
-        is_atom(k) -> put_in(m, [k], v)
-        true -> put_in(m, [String.to_atom(k)], v)
+      unless is_atom(k) do
+        k = String.to_atom(k)
       end
+      {k, v} = format_datetimes(k,v)
+      put_in(m, [k], v)
     end)
   end
 
@@ -163,55 +210,10 @@ defmodule LooksLikeANailBackend.Mapper do
   end
 
   defp convert_keys_to_atoms(simple_value), do: simple_value
-  
-  # OLD SHIT
 
-  # @properties [:endNode, :properties, :startNode, :type]
-  
-  # @spec map_from_neo(%{}, atom) :: %{}
-  # def map_from_neo(%{"results" => data}, :get) do
-  #   data = data |> hd |> Dict.get("data")
-  #   mapped_graphs = for graph <- data, do: map_graph(graph)
-  #   unify_graphs(mapped_graphs, :get)
-  # end
+  defp format_datetimes(:created, value), do: {:created, Utils.convert_msecs_to_iso(value)}
+  defp format_datetimes(:updated, value), do: {:updated, Utils.convert_msecs_to_iso(value)}
+  defp format_datetimes(key, value), do: {key, value}
 
-  # def map_from_neo(data, :all) do
-    
-  # end
-
-  # @spec map_graph(%{}) :: [...]
-  # def map_graph(graph) do
-  #   relationships = for rel <- graph["relationships"] do
-  #     [type] = for String.capitalize(label) <- rel["type"],
-  #       Enum.member?(@types, label), do: label
-  #     map_entity(to_atom(type), rel)
-  #   end
-
-  #   nodes = for node <- graph["nodes"] do
-  #     [type] = for label <- node["labels"], Enum.member?(@types, label), do: label
-  #     map_entity(to_atom(type), node, relationships)
-  #   end
-  # end
-
-  # @spec unify_graphs([...], atom) :: %{}
-  # def unify_graphs(graphs, :get) do
-  #   Enum.reduce(@types, %{}, fn(type, acc) ->
-  #     list = for entity <- graphs[type], do: entity
-  #     list = Enum.uniq(list)
-  #     case Enum.count(list) do
-  #       1 -> Dict.put(acc, map_name(type, false), hd(list))
-  #       _ -> Dict.put(acc, map_name(type, true), list)
-  #   end)
-  # end
-
-  # @spec map_name(String.t, boolean) :: String.t
-  # defp map_name(name, false), do: String.downcase(name)
-  # defp map_name(name, true) do
-  #   name = String.downcase(name)
-  #   case String.ends_with?(name, "s") do
-  #     true -> name
-  #     false -> name <> "s"
-  #   end
-  # end
 
 end
