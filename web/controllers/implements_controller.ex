@@ -4,7 +4,7 @@ defmodule LooksLikeANailBackend.ImplementsController do
   alias LooksLikeANailBackend.Implements
 
   def create(conn, %{"implements" => implements}) do
-    implements = Neo4J.Repo.create_node!(Implements, implements)
+    %{implements: implements} = Neo4J.Repo.create_node!(Implements, implements)
     render(conn, :new, implements: implements)
 
     # if changeset.valid? do
@@ -17,27 +17,6 @@ defmodule LooksLikeANailBackend.ImplementsController do
     # else
     #   render(conn, :new, changeset: changeset)
     # end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    id = String.to_integer(id)
-    implements = Neo4J.Repo.get!(Implements, id)
-    if(implements != nil) do
-      Neo4J.Repo.delete!(Implements, id)
-      render(conn, :new, implements: %{})
-    else
-      conn
-      |> put_status(:not_found)
-      |> render LooksLikeANailBackend.ErrorView, "404.json"
-    end
-    # conn
-    # |> put_status(:not_found)
-    # |> render(LooksLikeANailBackend.ErrorView, "404.html")
-  # comment = Repo.get!(Comment, id)
-  #
-  # comment = Repo.delete!(comment)
-  # render(conn, :show, comment: comment)
-  end
-  
+  end  
 
 end

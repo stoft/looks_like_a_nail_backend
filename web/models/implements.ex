@@ -10,14 +10,16 @@ defmodule LooksLikeANailBackend.Implements do
   @required_fields ~w(id tool feature)
   @optional_fields ~w()
 
-  def get_get_statement(id) do
-    statement = "MATCH (t:Tool)-[i:IMPLEMENTS]->(f:Feature) WHERE i.id = {id} RETURN distinct {implements: {id: i.id, tool: t.id, feature: f.id, updated: i.updated, created: i.created}} as implements"
-    parameters = %{id: id}
-    {statement, parameters}
-  end
+  # def get_get_statement(id) do
+  #   statement = "MATCH (t:Tool)-[i:IMPLEMENTS]->(f:Feature) WHERE i.id = {id} RETURN distinct {implements: {id: i.id, tool: t.id, feature: f.id, updated: i.updated, created: i.created}} as implements"
+  #   parameters = %{id: id}
+  #   {statement, parameters}
+  # end
 
   def get_create_statement(map) do
-    %{"feature": feature, "tool": tool} = map
+    %{"feature" => feature, "tool" => tool} = map
+    feature = (is_integer(feature) && feature || String.to_integer(feature))
+    tool = (is_integer(tool) && tool || String.to_integer(tool))
     parameters = %{"feature": feature, "tool": tool}
     statement = "MATCH (t:Tool), (f:Feature) " <>
     "WHERE t.id = {tool} and f.id = {feature} "<>

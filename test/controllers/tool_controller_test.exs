@@ -46,7 +46,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
         "updated" => "2015-08-01T10:27:56.764Z"}, "tools" => []}
     conn = get conn, tool_path(conn, :show, id)
     actual = json_response(conn, 200)
-    assert_equals_except expected, actual, ["updated", "created"]
+    assert_match_except expected, actual, ["updated", "created"]
   end
 
   test "try to show one non-existent entry", %{conn: conn} do
@@ -84,7 +84,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
       "updated" => "2015-08-01T15:45:10.429Z"}
     conn = put conn, tool_path(conn, :update, id, entry)
     response = json_response(conn, 200)
-    assert_equals_except expected, response, ["updated", "created"]
+    assert_match_except expected, response, ["updated", "created"]
   end
 
   test "update one partial entry", %{conn: conn} do
@@ -100,7 +100,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
       "updated" => "2015-08-01T16:03:10.902Z"}
     conn = put conn, tool_path(conn, :update, id, entry)
     response = json_response(conn, 200)
-    assert_equals_except expected, response, ["updated", "created"]
+    assert_match_except expected, response, ["updated", "created"]
   end
 
   test "delete one entry", %{conn: conn} do

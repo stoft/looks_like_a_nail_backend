@@ -26,7 +26,7 @@ defmodule LooksLikeANailBackend.TaskControllerTest do
       "subTitle" => "Task", "description" => "BuildingDescription"}}
     conn = get conn, task_path(conn, :show, 201)
     IO.inspect response = json_response(conn, 200)
-    assert_equals_except expected, response, ["updated", "created"]
+    assert_match_except expected, response, ["updated", "created"]
   end
 
   # test "create one entry", %{conn: conn} do
