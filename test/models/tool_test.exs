@@ -2,7 +2,6 @@ defmodule LooksLikeANailBackend.ToolTest do
   use ExUnit.Case, async: true
 
   alias LooksLikeANailBackend.Tool
-  import AssertMore
   # doctest LooksLikeANailBackend.Tool
 
   test "get create statement" do

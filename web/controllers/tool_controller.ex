@@ -13,7 +13,7 @@ defmodule LooksLikeANailBackend.ToolController do
   end
 
   def show(conn, %{"id" => id}) do
-    id = String.to_integer(id)
+    id = (is_integer(id) && id || String.to_integer(id))
     tool = Neo4J.Repo.get!(Tool, id)
     if(tool != nil) do
       render conn, :show, tool: tool
@@ -41,7 +41,7 @@ defmodule LooksLikeANailBackend.ToolController do
   end
 
   def update(conn, %{"id" => id, "tool" => tool_params}) do
-    id = String.to_integer(id)
+    id = (is_integer(id) && id || String.to_integer(id))
     tool = Neo4J.Repo.get!(Tool, id)
     if(tool != nil) do
       tool_params = Map.put(tool_params, "id", id)
@@ -67,7 +67,7 @@ defmodule LooksLikeANailBackend.ToolController do
   end
 
   def delete(conn, %{"id" => id}) do
-    id = String.to_integer(id)
+    id = (is_integer(id) && id || String.to_integer(id))
     tool = Neo4J.Repo.get!(Tool, id)
     if(tool != nil) do
       Neo4J.Repo.delete!(Tool, id)

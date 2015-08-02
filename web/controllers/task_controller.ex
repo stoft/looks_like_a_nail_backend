@@ -13,7 +13,7 @@ defmodule LooksLikeANailBackend.TaskController do
   end
 
   def show(conn, %{"id" => id}) do
-    id = String.to_integer(id)
+    id = (is_integer(id) && id || String.to_integer(id))
     task = Neo4J.Repo.get!(Task, id)
     if(task != nil) do
       render conn, :show, task: task
@@ -41,7 +41,7 @@ defmodule LooksLikeANailBackend.TaskController do
   end
 
   def update(conn, %{"id" => id, "task" => task_params}) do
-    id = String.to_integer(id)
+    id = (is_integer(id) && id || String.to_integer(id))
     task = Neo4J.Repo.get!(Task, id)
     if(task != nil) do
       task_params = Map.put(task_params, "id", id)
@@ -66,7 +66,7 @@ defmodule LooksLikeANailBackend.TaskController do
   end
 
   def delete(conn, %{"id" => id}) do
-    id = String.to_integer(id)
+    id = (is_integer(id) && id || String.to_integer(id))
     task = Neo4J.Repo.get!(Task, id)
     if(task != nil) do
       Neo4J.Repo.delete!(Task, id)
