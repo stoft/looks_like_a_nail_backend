@@ -29,7 +29,7 @@ defmodule Neo4J.Repo do
     # convert_to_type(data, type) |> return_single_or_nil
   end
   
-  def create_node!(type, node) do
+  def create!(type, node) do
     {statement, parameters} = apply(type, :get_create_statement, [node])
     data = do_cypher_statements_with_params!([{statement, parameters}])
     convert_to_type(data, type) |> return_single_or_nil

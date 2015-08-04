@@ -30,11 +30,11 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     id = 105
     expected = %{
       "features" => [%{"created" => "2015-08-01T10:27:56.764Z", "id" => 303,
-        "isCapableOf" => [3032], "supports" => [],
+        "provides" => [3032], "supports" => [],
         "title" => "postgresDatastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
       "implements" => [%{"feature" => 303, "id" => 3031, "tool" => 105}],
-      "isCapableOf" => [%{"feature" => 303, "id" => 3032, "task" => 205}],
+      "provides" => [%{"feature" => 303, "id" => 3032, "task" => 205}],
       "supports" => [],
       "tasks" => [%{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "DatastorageDescription", "id" => 205,

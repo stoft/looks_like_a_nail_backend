@@ -2,24 +2,20 @@ defmodule LooksLikeANailBackend.Mapper do
 
   alias LooksLikeANailBackend.Utils
 
-  # alias LooksLikeANailBackend.Feature
   alias LooksLikeANailBackend.Tool
-  # alias LooksLikeANailBackend.Task
-  # alias LooksLikeANailBackend.Implements
-  # alias LooksLikeANailBackend.IsCapableOf
 
   @types %{ "Feature" => :feature,
             "Tool" => :tool,
             "Task" => :task,
             "IMPLEMENTS" => :implements,
-            "IS_CAPABLE_OF" => :isCapableOf,
+            "PROVIDES" => :provides,
             "SUPPORTS" => :supports,
             "otherTool" => :otherTool}
 
   @datetimes [:updated, :created]
 
   @nodes [:feature, :tool, :task, :otherTool]
-  @relationships [:implements, :isCapableOf, :supports]
+  @relationships [:implements, :provides, :supports]
 
   def map_all_response(type, data) do
     import Map, only: [get: 2]
@@ -39,7 +35,7 @@ defmodule LooksLikeANailBackend.Mapper do
   end
   
   def map_entities(Tool, rows, columns) do
-    tools = %{tools: [], implements: [], features: [], isCapableOf: [], tasks: [], supports: []}
+    tools = %{tools: [], implements: [], features: [], provides: [], tasks: [], supports: []}
     # rows = for row <- rows, do: map_one_row(Tool, row, columns)
 
     grouped_rows = group_by_id_of_first_column rows
@@ -49,7 +45,7 @@ defmodule LooksLikeANailBackend.Mapper do
       |> update_in([:tools], &([entity[:tool]] ++ &1))
       |> update_in([:implements], &(entity[:implements] ++ &1))
       |> update_in([:features], &(entity[:features] ++ &1))
-      |> update_in([:isCapableOf], &(entity[:isCapableOf] ++ &1))
+      |> update_in([:provides], &(entity[:provides] ++ &1))
       |> update_in([:tasks], &(entity[:tasks] ++ &1))
       |> update_in([:supports], &(entity[:supports] ++ &1))
     end)
@@ -69,7 +65,7 @@ defmodule LooksLikeANailBackend.Mapper do
   
   def map_single_entity(Tool, rows, columns) do
     rows = for row <- rows, do: map_one_row(Tool, row, columns)
-    tool = %{tool: [], implements: [], features: [], isCapableOf: [], tasks: [], supports: [], tools: []}
+    tool = %{tool: [], implements: [], features: [], provides: [], tasks: [], supports: [], tools: []}
 
     tool = Enum.reduce(rows, tool, fn(row, acc)->
       get_and_put = fn(acc, row, put_key, get_key) ->
@@ -80,14 +76,14 @@ defmodule LooksLikeANailBackend.Mapper do
       acc |> get_and_put.(row, :tool, :tool)
       |> get_and_put.(row, :implements, :implements)
       |> get_and_put.(row, :features, :feature)
-      |> get_and_put.(row, :isCapableOf, :isCapableOf)
+      |> get_and_put.(row, :provides, :provides)
       |> get_and_put.(row, :tasks, :task)
       |> get_and_put.(row, :supports, :supports)
       |> get_and_put.(row, :tools, :otherTool)
     end)
 
     tool |> put_in([:tool], unify_entity(tool[:tool], [:implements]))
-    |> put_in([:features], unify_entity(tool[:features], [:isCapableOf, :supports]))
+    |> put_in([:features], unify_entity(tool[:features], [:provides, :supports]))
     |> put_in([:tool], hd(get_in(tool,[:tool])))
   end
   
@@ -134,10 +130,10 @@ defmodule LooksLikeANailBackend.Mapper do
       map = put_in map, [:tool, :implements], [implements_id]
       map = put_in map, [:implements, :tool], get_in(map, [:tool, :id])
       map = put_in map, [:implements, :feature], get_in(map, [:feature, :id])
-      if is_capable_of_id = get_in(map, [:isCapableOf, :id]) do
-        map = put_in map, [:feature, :isCapableOf], [is_capable_of_id]
-        map = put_in map, [:isCapableOf, :feature], get_in(map, [:feature, :id])
-        map = put_in map, [:isCapableOf, :task], get_in(map, [:task, :id])
+      if provides_id = get_in(map, [:provides, :id]) do
+        map = put_in map, [:feature, :provides], [provides_id]
+        map = put_in map, [:provides, :feature], get_in(map, [:feature, :id])
+        map = put_in map, [:provides, :task], get_in(map, [:task, :id])
       end
       if supports_id = get_in(map, [:supports, :id]) do
         map = put_in map, [:feature, :supports], [supports_id]

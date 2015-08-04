@@ -25,7 +25,7 @@ defmodule LooksLikeANailBackend.FeatureController do
   # end
   
   def create(conn, %{"feature" => feature}) do
-    feature = Neo4J.Repo.create_node!(Feature, feature)
+    feature = Neo4J.Repo.create!(Feature, feature)
     render(conn, :new, feature: feature)
 
     # if changeset.valid? do

@@ -25,7 +25,7 @@ defmodule LooksLikeANailBackend.TaskController do
   end
   
   def create(conn, %{"task" => task}) do
-    task = Neo4J.Repo.create_node!(Task, task)
+    task = Neo4J.Repo.create!(Task, task)
     render(conn, :new, task: task)
 
     # if changeset.valid? do

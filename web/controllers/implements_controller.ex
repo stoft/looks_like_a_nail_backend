@@ -4,7 +4,7 @@ defmodule LooksLikeANailBackend.ImplementsController do
   alias LooksLikeANailBackend.Implements
 
   def create(conn, %{"implements" => implements}) do
-    %{implements: implements} = Neo4J.Repo.create_node!(Implements, implements)
+    %{implements: implements} = Neo4J.Repo.create!(Implements, implements)
     render(conn, :new, implements: implements)
 
     # if changeset.valid? do

@@ -25,7 +25,7 @@ defmodule LooksLikeANailBackend.ToolController do
   end
   
   def create(conn, %{"tool" => tool}) do
-    tool = Neo4J.Repo.create_node!(Tool, tool)
+    tool = Neo4J.Repo.create!(Tool, tool)
     render(conn, :new, tool: tool)
 
     # if changeset.valid? do
@@ -86,5 +86,4 @@ defmodule LooksLikeANailBackend.ToolController do
   # render(conn, :show, comment: comment)
   end
   
-
 end
