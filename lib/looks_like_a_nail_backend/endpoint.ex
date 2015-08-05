@@ -36,5 +36,5 @@ defmodule LooksLikeANailBackend.Endpoint do
 
   # IO.inspect plug Plug.Conn, :read_body, length: 1000
 
-  plug :router, LooksLikeANailBackend.Router
+  plug LooksLikeANailBackend.Router
 end
