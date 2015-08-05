@@ -1,12 +1,12 @@
-defmodule LooksLikeANailBackend.TaskController do
+defmodule LooksLikeANailBackend.CapabilityController do
   use LooksLikeANailBackend.Web, :controller
 
-  alias LooksLikeANailBackend.Task
+  alias LooksLikeANailBackend.Capability
 
   def index(conn, _params) do
-    tasks = Neo4J.Repo.all!(Task)
-    if(tasks != nil) do
-      render conn, :index, tasks: tasks
+    capabilities = Neo4J.Repo.all!(Capability)
+    if(capabilities != nil) do
+      render conn, :index, capabilities: capabilities
     else
       render conn, :index, tools: []
     end
@@ -14,9 +14,9 @@ defmodule LooksLikeANailBackend.TaskController do
 
   def show(conn, %{"id" => id}) do
     id = (is_integer(id) && id || String.to_integer(id))
-    task = Neo4J.Repo.get!(Task, id)
-    if(task != nil) do
-      render conn, :show, task: task
+    capability = Neo4J.Repo.get!(Capability, id)
+    if(capability != nil) do
+      render conn, :show, capability: capability
     else
       conn
       |> put_status(:not_found)
@@ -24,9 +24,9 @@ defmodule LooksLikeANailBackend.TaskController do
     end
   end
   
-  def create(conn, %{"task" => task}) do
-    task = Neo4J.Repo.create!(Task, task)
-    render(conn, :new, task: task)
+  def create(conn, %{"capability" => capability}) do
+    capability = Neo4J.Repo.create!(Capability, capability)
+    render(conn, :new, capability: capability)
 
     # if changeset.valid? do
     #   # Repo.insert!(changeset)
@@ -40,13 +40,13 @@ defmodule LooksLikeANailBackend.TaskController do
     # end
   end
 
-  def update(conn, %{"id" => id, "task" => task_params}) do
+  def update(conn, %{"id" => id, "capability" => capability_params}) do
     id = (is_integer(id) && id || String.to_integer(id))
-    task = Neo4J.Repo.get!(Task, id)
-    if(task != nil) do
-      task_params = Map.put(task_params, "id", id)
-      task = Neo4J.Repo.update!(Task, task_params)
-      render conn, :show, task: task
+    capability = Neo4J.Repo.get!(Capability, id)
+    if(capability != nil) do
+      capability_params = Map.put(capability_params, "id", id)
+      capability = Neo4J.Repo.update!(Capability, capability_params)
+      render conn, :show, capability: capability
     else
       conn
       |> put_status(:not_found)
@@ -67,10 +67,10 @@ defmodule LooksLikeANailBackend.TaskController do
 
   def delete(conn, %{"id" => id}) do
     id = (is_integer(id) && id || String.to_integer(id))
-    task = Neo4J.Repo.get!(Task, id)
-    if(task != nil) do
-      Neo4J.Repo.delete!(Task, id)
-      render(conn, :new, task: %{})
+    capability = Neo4J.Repo.get!(Capability, id)
+    if(capability != nil) do
+      Neo4J.Repo.delete!(Capability, id)
+      render(conn, :new, capability: %{})
     else
       conn
       |> put_status(:not_found)

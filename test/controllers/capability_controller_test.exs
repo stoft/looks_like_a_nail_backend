@@ -1,8 +1,8 @@
-defmodule LooksLikeANailBackend.TaskControllerTest do
+defmodule LooksLikeANailBackend.CapabilityControllerTest do
   use LooksLikeANailBackend.ConnCase, async: true
 
   import AssertMore
-  alias LooksLikeANailBackend.Task
+  alias LooksLikeANailBackend.Capability
 
   @moduletag :external
 
@@ -17,23 +17,23 @@ defmodule LooksLikeANailBackend.TaskControllerTest do
   end
 
   test "lists all entries on index", %{conn: conn} do
-    conn = get conn, task_path(conn, :index)
-    assert json_response(conn, 200) |> Map.has_key?("tasks")
+    conn = get conn, capability_path(conn, :index)
+    assert json_response(conn, 200) |> Map.has_key?("capabilities")
   end
 
   test "show one entry", %{conn: conn} do
-    expected = %{"task" => %{"title" => "Building",
-      "subTitle" => "Task", "description" => "BuildingDescription"}}
-    conn = get conn, task_path(conn, :show, 201)
+    expected = %{"capability" => %{"title" => "Building",
+      "subTitle" => "Capability", "description" => "BuildingDescription"}}
+    conn = get conn, capability_path(conn, :show, 201)
     IO.inspect response = json_response(conn, 200)
     assert_match_except expected, response, ["updated", "created"]
   end
 
   # test "create one entry", %{conn: conn} do
   #   entry = %{title: "Baz", sub_title: "barzilla"}
-  #   conn = post conn, task_path(conn, :create, task: entry)
+  #   conn = post conn, capability_path(conn, :create, capability: entry)
   #   IO.inspect json_response(conn, 200)
-  #   # assert json_response(conn, 200)["data"] |> Map.has_key?("tasks")
+  #   # assert json_response(conn, 200)["data"] |> Map.has_key?("capabilities")
   # end
 
 end

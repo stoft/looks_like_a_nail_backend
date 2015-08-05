@@ -22,13 +22,13 @@ defmodule LooksLikeANailBackend.Tool do
   # end
 
   def get_all_statement() do
-    statement = "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(task) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, provides, task, supports, otherTool"
+    statement = "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, provides, capability, supports, otherTool"
     parameters = %{}
     {statement, parameters}
   end
 
   def get_get_statement(id) do
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(task) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, provides, task, supports, otherTool"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, provides, capability, supports, otherTool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) OPTIONAL MATCH (tool)<-[:SUPPORTS]-(ff:Feature) RETURN {tool: tool, implements: collect(distinct f.id), supports: collect(distinct ff.id)}"
     parameters = %{id: id}
