@@ -10,10 +10,10 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     keywords: ["key", "word"], insert_at: "", updated_at: ""}
   @invalid_attrs %{}
 
-  setup_all do
-    LooksLikeANailBackend.TestDBHelper.setup_db
-    :ok
-  end
+  # setup_all do
+  #   LooksLikeANailBackend.TestDBHelper.setup_db
+  #   :ok
+  # end
 
   setup do
     conn = conn() |> put_req_header("accept", "application/json")
@@ -34,11 +34,11 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
         "title" => "postgresDatastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
       "implements" => [%{"feature" => 303, "id" => 3031, "tool" => 105}],
-      "provides" => [%{"feature" => 303, "id" => 3032, "task" => 205}],
+      "provides" => [%{"feature" => 303, "id" => 3032, "capability" => 205}],
       "supports" => [],
-      "tasks" => [%{"created" => "2015-08-01T10:27:56.764Z",
+      "capabilities" => [%{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "DatastorageDescription", "id" => 205,
-        "subTitle" => "Task", "title" => "Datastorage",
+        "subTitle" => "Capability", "title" => "Datastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
       "tool" => %{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "PostgresDescription", "id" => 105, "implements" => [3031],

@@ -18,9 +18,9 @@ defmodule LooksLikeANailBackend.ProvidesControllerTest do
 
   test "create one entry", %{conn: conn} do
     entry = %{"provides" => %{
-        "created" => "string", "id" => 0, "feature" => 308, "task" => 205, "updated" => "string"}}
+        "created" => "string", "id" => 0, "feature" => 308, "capability" => 205, "updated" => "string"}}
 
-    expected = %{"provides" => %{"feature" => 308, "task" => 205, "updated" => nil, "created" => nil, "id" => 0}}
+    expected = %{"provides" => %{"feature" => 308, "capability" => 205, "updated" => nil, "created" => nil, "id" => 0}}
 
     conn = post conn, provides_path(conn, :create, entry)
     response = json_response(conn, 200)

@@ -4,7 +4,7 @@ defmodule LooksLikeANailBackend.CapabilityTest do
   # doctest LooksLikeANailBackend.Capability
 
   test "get create statement" do
-    statement = {"CREATE (capability:Capability {props}) SET capability.id = id(capability), capability.updated = timestamp(), capability.created = timestamp() RETURN task",
+    statement = {"CREATE (capability:Capability {props}) SET capability.id = id(capability), capability.updated = timestamp(), capability.created = timestamp() RETURN capability",
       %{props: %{title: "Foo"}}}
     assert statement == LooksLikeANailBackend.Capability.get_create_statement(%{title: "Foo"})
   end
