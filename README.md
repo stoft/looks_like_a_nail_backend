@@ -3,3 +3,5 @@
 # LooksLikeANailBackend
 
 The Phoenix/Elixir implementation of the Looks Like a Nail Backend (WIP, yet to be announced).
+
+(c) 2015 Looks Like A Nail
