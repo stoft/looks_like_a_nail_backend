@@ -15,7 +15,7 @@ defmodule LooksLikeANailBackend.Mapper do
   @datetimes [:updated, :created]
 
   @nodes [:feature, :tool, :capability, :otherTool]
-  @relationships [:implements, :provides, :supports]
+  @relationships [:supports]
 
   def map_all_response(type, data) do
     import Map, only: [get: 2]
@@ -65,7 +65,7 @@ defmodule LooksLikeANailBackend.Mapper do
   
   def map_single_entity(Tool, rows, columns) do
     rows = for row <- rows, do: map_one_row(Tool, row, columns)
-    tool = %{tool: [], implements: [], features: [], provides: [], capabilities: [], supports: [], tools: []}
+    tool = %{tool: [], features: [], capabilities: [], supports: [], tools: []}
 
     tool = Enum.reduce(rows, tool, fn(row, acc)->
       get_and_put = fn(acc, row, put_key, get_key) ->
@@ -74,19 +74,21 @@ defmodule LooksLikeANailBackend.Mapper do
         # IO.inspect bar = put_in(acc, [put_key], ([get_in(row, [get_key])] ++ get_in(acc, [put_key]) |> Enum.uniq))
       end
       acc |> get_and_put.(row, :tool, :tool)
-      |> get_and_put.(row, :implements, :implements)
       |> get_and_put.(row, :features, :feature)
-      |> get_and_put.(row, :provides, :provides)
       |> get_and_put.(row, :capabilities, :capability)
       |> get_and_put.(row, :supports, :supports)
       |> get_and_put.(row, :tools, :otherTool)
     end)
 
-    tool |> put_in([:tool], unify_entity(tool[:tool], [:implements]))
-    |> put_in([:features], unify_entity(tool[:features], [:provides, :supports]))
+    tool |> put_in([:tool], unify_entity(tool[:tool], [:features]))
+    |> put_in([:features], unify_entity(tool[:features], [:supports]))
     |> put_in([:tool], hd(get_in(tool,[:tool])))
   end
   
+  @doc """
+  entities = list of duplicates of the same entity, but with varying references
+  fields = list of fields to unify into one list
+  """
   def unify_entity(entities, fields) do
     # IO.inspect {entities, fields}
     entity_map = Enum.reduce(fields, %{}, fn(field, acc) ->
@@ -126,14 +128,10 @@ defmodule LooksLikeANailBackend.Mapper do
     map = (nodes ++ relationships)
       |> Enum.reduce(%{}, &Enum.into(&2, &1))
 
-    if implements_id = get_in(map, [:implements, :id]) do
-      map = put_in map, [:tool, :implements], [implements_id]
-      map = put_in map, [:implements, :tool], get_in(map, [:tool, :id])
-      map = put_in map, [:implements, :feature], get_in(map, [:feature, :id])
-      if provides_id = get_in(map, [:provides, :id]) do
-        map = put_in map, [:feature, :provides], [provides_id]
-        map = put_in map, [:provides, :feature], get_in(map, [:feature, :id])
-        map = put_in map, [:provides, :capability], get_in(map, [:capability, :id])
+    if feature_id = get_in(map, [:feature, :id]) do
+      map = put_in map, [:tool, :features], [feature_id]
+      if capability_id = get_in(map, [:capability, :id]) do
+        map = put_in map, [:feature, :capability], [capability_id]
       end
       if supports_id = get_in(map, [:supports, :id]) do
         map = put_in map, [:feature, :supports], [supports_id]
@@ -144,7 +142,7 @@ defmodule LooksLikeANailBackend.Mapper do
       end
 
     else
-      map = put_in map, [:tool, :implements], []
+      map = put_in map, [:tool, :features], []
     end
     map
   end
