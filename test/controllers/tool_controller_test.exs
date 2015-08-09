@@ -30,18 +30,16 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     id = 105
     expected = %{
       "features" => [%{"created" => "2015-08-01T10:27:56.764Z", "id" => 303,
-        "provides" => [3032], "supports" => [],
+        "capability" => 205, "supports" => [],
         "title" => "postgresDatastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
-      "implements" => [%{"feature" => 303, "id" => 3031, "tool" => 105}],
-      "provides" => [%{"feature" => 303, "id" => 3032, "capability" => 205}],
       "supports" => [],
       "capabilities" => [%{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "DatastorageDescription", "id" => 205,
         "subTitle" => "Capability", "title" => "Datastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
       "tool" => %{"created" => "2015-08-01T10:27:56.764Z",
-        "description" => "PostgresDescription", "id" => 105, "implements" => [3031],
+        "description" => "PostgresDescription", "id" => 105, "features" => [303],
         "subTitle" => "Database", "title" => "Postgres",
         "updated" => "2015-08-01T10:27:56.764Z"}, "tools" => []}
     conn = get conn, tool_path(conn, :show, id)
