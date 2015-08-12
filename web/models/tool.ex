@@ -47,7 +47,7 @@ defmodule LooksLikeANailBackend.Tool do
     subTitle = Map.get(tool, "subTitle")
     description = Map.get(tool, "description")
     keywords = Map.get(tool, "keywords")
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp(), tool.keywords = {keywords} RETURN tool"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp(), tool.keywords = {keywords} RETURN {id: tool.id, title: tool.title, subTitle: tool.subTitle, description: tool.description, created: tool.created, updated: tool.updated, features: collect(distinct f.id)} as tool"
     parameters = %{id: id, title: title, subTitle: subTitle, description: description, keywords: keywords}
     {statement, parameters}
   end
