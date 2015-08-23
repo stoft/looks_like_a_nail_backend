@@ -25,7 +25,12 @@ defmodule LooksLikeANailBackend.Router do
 
     # get "/", ApiController
 
-    resources "/tools", ToolController
+    resources "/tools", ToolController do
+      resources "/features", FeatureController, only: [:create, :update, :delete] do
+        resources "/concepts", FeatureController, only: [:create, :delete]
+      end
+    end
+    # resources "/concepts", ConceptsController
     resources "/capabilities", CapabilityController
     resources "/features", FeatureController, only: [:create, :update, :delete]
     resources "/implements", ImplementsController, only: [:create]

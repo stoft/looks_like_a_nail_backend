@@ -4,7 +4,8 @@ defmodule LooksLikeANailBackend.Feature do
     title: nil,
     subTitle: "",
     keywords: [],
-    provides: nil,
+    capability: nil,
+    concepts: [],
     description: "",
     created: "",
     updated: "")
@@ -19,13 +20,15 @@ defmodule LooksLikeANailBackend.Feature do
   end
 
   def get_get_statement(id) do
-    statement = "MATCH (feature:Feature) WHERE feature.id = {id} RETURN feature"
+    match = "MATCH (f:Feature) WHERE f.id = {id} OPTIONAL MATCH (f)-[s:SUPPORTS]->(ct) OPTIONAL MATCH (f)-[p:PROVIDES]->(cy)"
+    return = "RETURN {id: f.id, title: f.title, description: f.description subTitle: f.subTitle, capability: cy.id, concepts: collect(distinct ct.id)}"
+    statement = "#{match} #{return}"
     parameters = %{id: id}
     {statement, parameters}
   end
 
   def get_delete_statement(id) do
-    statement = "MATCH (feature:Feature) WHERE feature.id = {id} DELETE feature"
+    statement = "MATCH (feature:Feature) OPTIONAL MATCH (feature)-[r]-() WHERE feature.id = {id} DELETE feature, r"
     parameters = %{id: id}
     {statement, parameters}
   end
@@ -48,11 +51,14 @@ defmodule LooksLikeANailBackend.Feature do
   end
 
   def get_create_statement(map) do
-    statement = "CREATE (feature:Feature {props}) " <>
+    tool = Dict.get(map, "tool")
+    capability = Dict.get(map, "capability")
+    statement = "MATCH (t:Tool), (c:Capability) WHERE t.id = {tool} and c.id = {capability} " <>
+    "CREATE (t)-[i:IMPLEMENTS]->(feature:Feature {props})-[p:PROVIDES]->(c) " <>
     "SET feature.id = id(feature), " <>
     "feature.updated = timestamp(), feature.created = timestamp() " <>
     "RETURN feature"
-    parameters = %{props: map}
+    parameters = %{props: map, tool: tool, capability: capability}
     {statement, parameters}
   end
 
