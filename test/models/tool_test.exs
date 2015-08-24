@@ -5,7 +5,7 @@ defmodule LooksLikeANailBackend.ToolTest do
   # doctest LooksLikeANailBackend.Tool
 
   test "get create statement" do
-    expected = {"CREATE (tool:Tool {props}) SET tool.id = id(tool), tool.updated = timestamp(), tool.created = timestamp() RETURN tool",
+    expected = {"CREATE (tool:Tool:Concept {props}) SET tool.id = id(tool), tool.updated = timestamp(), tool.created = timestamp() RETURN tool",
       %{props: %{title: "Foo"}}}
     assert expected == Tool.get_create_statement(%{title: "Foo"})
   end

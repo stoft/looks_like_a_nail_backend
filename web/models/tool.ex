@@ -22,13 +22,13 @@ defmodule LooksLikeANailBackend.Tool do
   # end
 
   def get_all_statement() do
-    statement = "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, provides, capability, supports, otherTool"
+    statement = "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(concept) RETURN distinct tool, implements, feature, provides, capability, supports, concept"
     parameters = %{}
     {statement, parameters}
   end
 
   def get_get_statement(id) do
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, feature, provides, capability, supports, otherTool"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(concept) RETURN distinct tool, feature, provides, capability, supports, concept"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) OPTIONAL MATCH (tool)<-[:SUPPORTS]-(ff:Feature) RETURN {tool: tool, implements: collect(distinct f.id), supports: collect(distinct ff.id)}"
     parameters = %{id: id}
@@ -60,7 +60,7 @@ defmodule LooksLikeANailBackend.Tool do
   """
   def get_create_statement(map) do
     parameters = %{props: map}
-    statement = "CREATE (tool:Tool {props}) " <>
+    statement = "CREATE (tool:Tool:Concept {props}) " <>
     "SET tool.id = id(tool), " <>
     "tool.updated = timestamp(), tool.created = timestamp() " <>
     "RETURN tool"

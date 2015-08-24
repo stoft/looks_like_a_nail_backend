@@ -30,7 +30,7 @@ defmodule LooksLikeANailBackend.Router do
         resources "/concepts", FeatureController, only: [:create, :delete]
       end
     end
-    # resources "/concepts", ConceptsController
+    resources "/concepts", ConceptsController
     resources "/capabilities", CapabilityController
     resources "/features", FeatureController, only: [:create, :update, :delete]
     resources "/implements", ImplementsController, only: [:create]
