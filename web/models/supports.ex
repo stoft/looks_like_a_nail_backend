@@ -16,15 +16,23 @@ defmodule LooksLikeANailBackend.Supports do
     "CREATE (f)-[s:SUPPORTS]->(c) " <>
     "SET s.id = id(s), " <>
     "s.updated = timestamp(), s.created = timestamp() " <>
-    "RETURN s"
+    "RETURN {id: s.id, feature: f.id, concept: c.id, created: s.created, updated: s.updated} as supports"
     {statement, parameters}
   end
 
   def get_delete_statement(id) do
-    parameters = %{id: id}
-    statement = "MATCH ()-[s:SUPPORTS]->() WHERE s.id = {id} DELETE s"
+    parameters = %{"id" => id}
+    statement = "MATCH (:Feature)-[s:SUPPORTS]->() WHERE s.id = {id} DELETE s"
     {statement, parameters}
   end
+
+  def get_get_statement(id) do
+    parameters = %{"id" => id}
+    statement = "MATCH (f:Feature)-[s:SUPPORTS]->(c) WHERE s.id = {id} " <>
+    "RETURN {feature: f.id, concept: c.id, id: s.id, created: s.created, updated: s.updated} as supports"
+    {statement, parameters}
+  end
+  
   
 
 end
