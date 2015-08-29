@@ -5,7 +5,7 @@ defmodule LooksLikeANailBackend.Tool do
     subTitle: "",
     keywords: [],
     description: "",
-    implements: [], # outgoing/has_many
+    features: [], # outgoing/has_many
     supportedBy: [], # incoming/belongs_to_many
     inserted: "",
     updated: "")
@@ -28,7 +28,7 @@ defmodule LooksLikeANailBackend.Tool do
   end
 
   def get_get_statement(id) do
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, implements, feature, provides, capability, supports, otherTool"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(otherTool) RETURN distinct tool, feature, provides, capability, supports, otherTool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
     # "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) OPTIONAL MATCH (tool)<-[:SUPPORTS]-(ff:Feature) RETURN {tool: tool, implements: collect(distinct f.id), supports: collect(distinct ff.id)}"
     parameters = %{id: id}
@@ -47,7 +47,7 @@ defmodule LooksLikeANailBackend.Tool do
     subTitle = Map.get(tool, "subTitle")
     description = Map.get(tool, "description")
     keywords = Map.get(tool, "keywords")
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp(), tool.keywords = {keywords} RETURN tool"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) SET tool.title = {title}, tool.subTitle = {subTitle}, tool.description = {description}, tool.updated = timestamp(), tool.keywords = {keywords} RETURN {id: tool.id, title: tool.title, subTitle: tool.subTitle, description: tool.description, created: tool.created, updated: tool.updated, features: collect(distinct f.id)} as tool"
     parameters = %{id: id, title: title, subTitle: subTitle, description: description, keywords: keywords}
     {statement, parameters}
   end

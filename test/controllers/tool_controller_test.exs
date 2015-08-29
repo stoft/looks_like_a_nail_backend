@@ -30,18 +30,16 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     id = 105
     expected = %{
       "features" => [%{"created" => "2015-08-01T10:27:56.764Z", "id" => 303,
-        "provides" => [3032], "supports" => [],
+        "capability" => 205, "supports" => [],
         "title" => "postgresDatastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
-      "implements" => [%{"feature" => 303, "id" => 3031, "tool" => 105}],
-      "provides" => [%{"feature" => 303, "id" => 3032, "capability" => 205}],
       "supports" => [],
-      "capabilities" => [%{"created" => "2015-08-01T10:27:56.764Z",
+      "capability" => [%{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "DatastorageDescription", "id" => 205,
         "subTitle" => "Capability", "title" => "Datastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
       "tool" => %{"created" => "2015-08-01T10:27:56.764Z",
-        "description" => "PostgresDescription", "id" => 105, "implements" => [3031],
+        "description" => "PostgresDescription", "id" => 105, "features" => [303],
         "subTitle" => "Database", "title" => "Postgres",
         "updated" => "2015-08-01T10:27:56.764Z"}, "tools" => []}
     conn = get conn, tool_path(conn, :show, id)
@@ -81,7 +79,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     expected = %{"created" => "2015-08-01T11:37:08.910Z",
       "description" => "Elixir is a functional, concurrent, general-purpose programming language that runs on the Erlang virtual machine (BEAM). Elixir builds on top of Erlang to provide distributed, fault-tolerant, soft real-time, non-stop applications but also extends it to support metaprogramming with macros and polymorphism via protocols.",
       "id" => 104, "subTitle" => "Programming Language", "title" => "Elixir",
-      "updated" => "2015-08-01T15:45:10.429Z"}
+      "updated" => "2015-08-01T15:45:10.429Z", "features" => [302]}
     conn = put conn, tool_path(conn, :update, id, entry)
     response = json_response(conn, 200)
     assert_match_except expected, response, ["updated", "created"]
@@ -96,10 +94,10 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
     }
     expected = %{"created" => "2015-08-01T11:37:08.910Z",
       "description" => "MySQL a free/open source database owned by an \"evil empire\".",
-      "id" => 106, "subTitle" => "Database", "title" => "MySQL",
+      "id" => 106, "subTitle" => "Database", "title" => "MySQL", "features" => [304],
       "updated" => "2015-08-01T16:03:10.902Z"}
     conn = put conn, tool_path(conn, :update, id, entry)
-    response = json_response(conn, 200)
+    IO.inspect response = json_response(conn, 200)
     assert_match_except expected, response, ["updated", "created"]
   end
 
