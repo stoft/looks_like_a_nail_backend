@@ -9,7 +9,7 @@ defmodule LooksLikeANailBackend.SupportsController do
     concept_id = ConversionHelper.convert_to_integer(Dict.get(supports, "concept"))
 
     properties = %{"feature_id" => feature_id, "concept_id" => concept_id}
-    IO.inspect supports = Neo4J.Repo.create!(Supports, properties)
+    supports = Neo4J.Repo.create!(Supports, properties)
     render(conn, :new, supports: supports)
   end
 
