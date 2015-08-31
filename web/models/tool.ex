@@ -7,7 +7,7 @@ defmodule LooksLikeANailBackend.Tool do
     description: "",
     features: [], # outgoing/has_many
     supportedBy: [], # incoming/belongs_to_many
-    inserted: "",
+    created: "",
     updated: "")
     # features: [])
 
