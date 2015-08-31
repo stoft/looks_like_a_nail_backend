@@ -21,7 +21,7 @@ defmodule LooksLikeANailBackend.Feature do
 
   def get_get_statement(id) do
     match = "MATCH (f:Feature) WHERE f.id = {id} OPTIONAL MATCH (f)-[s:SUPPORTS]->(ct) OPTIONAL MATCH (f)-[p:PROVIDES]->(cy)"
-    return = "RETURN {id: f.id, title: f.title, description: f.description subTitle: f.subTitle, capability: cy.id, concepts: collect(distinct ct.id)}"
+    return = "RETURN {id: f.id, title: f.title, description: f.description, subTitle: f.subTitle, capability: cy.id, concepts: collect(distinct ct.id)}"
     statement = "#{match} #{return}"
     parameters = %{id: id}
     {statement, parameters}
