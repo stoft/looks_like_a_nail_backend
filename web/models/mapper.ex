@@ -1,6 +1,6 @@
 defmodule LooksLikeANailBackend.Mapper do
 
-  alias LooksLikeANailBackend.Utils
+  alias LooksLikeANailBackend.ConversionHelper
 
   alias LooksLikeANailBackend.Tool
 
@@ -10,11 +10,11 @@ defmodule LooksLikeANailBackend.Mapper do
             "IMPLEMENTS" => :implements,
             "PROVIDES" => :provides,
             "SUPPORTS" => :supports,
-            "otherTool" => :otherTool}
+            "Concept" => :concept}
 
   @datetimes [:updated, :created]
 
-  @nodes [:feature, :tool, :capability, :otherTool]
+  @nodes [:feature, :tool, :capability, :concept]
   @relationships [:supports]
 
   def map_all_response(type, data) do
@@ -27,6 +27,7 @@ defmodule LooksLikeANailBackend.Mapper do
   end
 
   def map_get_response(type, data) do
+    # IO.inspect data
     import Map, only: [get: 2]
     case type do
       Tool -> map_single_entity(type, data |> get("results") |> hd |> get("data"), data |> get("results") |> hd |> get("columns"))
@@ -35,18 +36,21 @@ defmodule LooksLikeANailBackend.Mapper do
   end
   
   def map_entities(Tool, rows, columns) do
-    tools = %{tools: [], features: [], capability: [], supports: []}
+    tools = %{tools: [], features: [], capabilities: [], concepts: []}
 
     grouped_rows = group_by_id_of_first_column rows
     entities = Enum.map(grouped_rows, fn({k, v}) -> map_single_entity(Tool, v, columns) end)
     tools = Enum.reduce(entities, tools, fn(entity, acc)->
-      acc
+      acc = acc
       |> update_in([:tools], &([entity[:tool]] ++ &1))
       |> update_in([:features], &(entity[:features] ++ &1))
-      |> update_in([:capability], &(entity[:capability] ++ &1))
-      |> update_in([:supports], &(entity[:supports] ++ &1))
+      |> update_in([:capabilities], &(entity[:capability] ++ &1))
+      # |> update_in([:supports], &(entity[:supports] ++ &1))
     end)
-    Enum.reduce(tools, %{}, fn({k, v}, acc)-> put_in acc, [k], Enum.uniq(v) end)
+    IO.inspect(tools)
+    Enum.reduce(tools, %{}, fn({k, v}, acc)->
+      put_in acc, [k], Enum.uniq(v)
+    end)
     tools
   end
 
@@ -62,7 +66,7 @@ defmodule LooksLikeANailBackend.Mapper do
   
   def map_single_entity(Tool, rows, columns) do
     rows = for row <- rows, do: map_one_row(Tool, row, columns)
-    tool = %{tool: [], features: [], capability: [], supports: [], tools: []}
+    tool = %{tool: [], features: [], capability: [], concepts: []}
 
     tool = Enum.reduce(rows, tool, fn(row, acc)->
       get_and_put = fn(acc, row, put_key, get_key) ->
@@ -73,8 +77,8 @@ defmodule LooksLikeANailBackend.Mapper do
       acc |> get_and_put.(row, :tool, :tool)
       |> get_and_put.(row, :features, :feature)
       |> get_and_put.(row, :capability, :capability)
-      |> get_and_put.(row, :supports, :supports)
-      |> get_and_put.(row, :tools, :otherTool)
+      # |> get_and_put.(row, :supports, :supports)
+      |> get_and_put.(row, :concepts, :concept)
     end)
 
     tool |> put_in([:tool], unify_entity(tool[:tool], [:features]))
@@ -131,9 +135,9 @@ defmodule LooksLikeANailBackend.Mapper do
         map = put_in map, [:feature, :capability], capability_id
       end
       if supports_id = get_in(map, [:supports, :id]) do
-        map = put_in map, [:feature, :supports], [supports_id]
-        map = put_in map, [:supports, :feature], get_in(map, [:feature, :id])
-        map = put_in map, [:supports, :tool], get_in(map, [:otherTool, :id])
+        map = put_in map, [:feature, :supports], [get_in(map, [:concept, :id])]
+        # map = put_in map, [:supports, :feature], get_in(map, [:feature, :id])
+        # map = put_in map, [:supports, :tool], get_in(map, [:concept, :id])
       else
         map = put_in(map, [:feature, :supports], [])
       end
@@ -152,11 +156,13 @@ defmodule LooksLikeANailBackend.Mapper do
   end
 
   def convert_to_type(data, type) do
+    # IO.inspect( data )
     type_name = get_type_name(type)
     name = fn(%{"columns" => list}) -> hd(list) == type_name end
     data_list = data
+      # |> IO.inspect
       |> Map.get("results")
-      |> Enum.filter(&name.(&1))
+      # |> Enum.filter(&name.(&1))
       |> hd
       |> Map.get("data")
       |> Enum.map(fn(%{"row" => row}) -> convert_fields(hd(row)) end)
@@ -168,7 +174,7 @@ defmodule LooksLikeANailBackend.Mapper do
       |> Enum.reverse |> hd |> String.downcase
   end
 
-  defp convert_fields(map) do
+  def convert_fields(map) do
     Enum.reduce(map, %{}, fn(pair,acc) ->
       {k,v} = convert_field(pair)
       Map.put(acc, k, v)
@@ -176,10 +182,10 @@ defmodule LooksLikeANailBackend.Mapper do
   end
 
   defp convert_field({"created", value}) when is_integer(value) do
-    {:created, Utils.convert_msecs_to_iso(value)}
+    {:created, ConversionHelper.convert_msecs_to_iso(value)}
   end
   defp convert_field({"updated", value}) when is_integer(value) do
-    {:updated, Utils.convert_msecs_to_iso(value)}
+    {:updated, ConversionHelper.convert_msecs_to_iso(value)}
   end
   defp convert_field({k,v}) do
     {String.to_atom(k), v}
@@ -202,8 +208,8 @@ defmodule LooksLikeANailBackend.Mapper do
 
   defp convert_keys_to_atoms(simple_value), do: simple_value
 
-  defp format_datetimes(:created, value), do: {:created, Utils.convert_msecs_to_iso(value)}
-  defp format_datetimes(:updated, value), do: {:updated, Utils.convert_msecs_to_iso(value)}
+  defp format_datetimes(:created, value), do: {:created, ConversionHelper.convert_msecs_to_iso(value)}
+  defp format_datetimes(:updated, value), do: {:updated, ConversionHelper.convert_msecs_to_iso(value)}
   defp format_datetimes(key, value), do: {key, value}
 
 
