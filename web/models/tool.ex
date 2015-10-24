@@ -1,5 +1,9 @@
 defmodule LooksLikeANailBackend.Tool do
 
+  alias LooksLikeANailBackend.Feature
+  alias LooksLikeANailBackend.Capability
+  alias LooksLikeANailBackend.Concept
+
   defstruct(id: nil,
     title: nil,
     subTitle: "",
@@ -19,24 +23,27 @@ defmodule LooksLikeANailBackend.Tool do
   #   for field <- @required_fields, do:
   #     if(Map.get(tool, field) == nil), do: errors = errors ++ {ValidationError, "Field #{field} must not be nil."}
   #   errors
-  # end
+  # end  
 
   def get_all_statement() do
-    statement = "MATCH (tool:Tool) OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(concept) RETURN distinct tool, implements, feature, provides, capability, supports, concept"
+    tools         = "MATCH (tool:Tool)"
+    features      = "OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(feature:Feature)"
+    capabilities  = "OPTIONAL MATCH (feature)-[:PROVIDES]->(capability:Capability)"
+    concepts      = "OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(concept:Concept)"
+    return        = "RETURN distinct tool, feature, capability, concept"
+    statement = "#{tools} #{features} #{capabilities} #{concepts} #{return}"
     parameters = %{}
     {statement, parameters}
   end
 
   def get_get_statement(id) do
-    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(concept) RETURN distinct tool, feature, provides, capability, supports, concept"
-    # "MATCH (tool:Tool) WHERE tool.id = #{id} RETURN tool"
-    # "MATCH (tool:Tool) WHERE tool.id = #{id} OPTIONAL MATCH (tool)-[:IMPLEMENTS]->(f:Feature) OPTIONAL MATCH (tool)<-[:SUPPORTS]-(ff:Feature) RETURN {tool: tool, implements: collect(distinct f.id), supports: collect(distinct ff.id)}"
+    statement = "MATCH (tool:Tool) WHERE tool.id = {id} OPTIONAL MATCH (tool)-[implements:IMPLEMENTS]->(feature:Feature) OPTIONAL MATCH (feature)-[provides:PROVIDES]->(capability) OPTIONAL MATCH (feature)-[supports:SUPPORTS]->(concept) RETURN distinct tool, feature, provides, capability, concept"
     parameters = %{id: id}
     {statement, parameters}
   end
 
   def get_delete_statement(id) do
-    statement = "MATCH (t:Tool) WHERE t.id = {id} OPTIONAL MATCH (t)-[r:IMPLEMENTS]->(f:Feature)-[r2:PROVIDES]->(), (f)-[s:SUPPORTS]->() DELETE t, r, f, r2, s"
+    statement = "MATCH (t:Tool) WHERE t.id = {id} OPTIONAL MATCH (t)-[i:IMPLEMENTS]->(f:Feature)-[p:PROVIDES]->(), (f)-[s:SUPPORTS]->() DELETE t, i, f, p, s"
     parameters = %{id: id}
     {statement, parameters}
   end

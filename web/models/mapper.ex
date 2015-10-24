@@ -45,13 +45,15 @@ defmodule LooksLikeANailBackend.Mapper do
       |> update_in([:tools], &([entity[:tool]] ++ &1))
       |> update_in([:features], &(entity[:features] ++ &1))
       |> update_in([:capabilities], &(entity[:capability] ++ &1))
-      # |> update_in([:supports], &(entity[:supports] ++ &1))
+      |> update_in([:concepts], &(entity[:concepts] ++ &1))
     end)
-    IO.inspect(tools)
-    Enum.reduce(tools, %{}, fn({k, v}, acc)->
+    # IO.inspect(tools)
+    tools = Enum.reduce(tools, %{}, fn({k, v}, acc)->
+      # IO.puts "Type: #{k}"
+      # IO.inspect(v)
       put_in acc, [k], Enum.uniq(v)
     end)
-    tools
+    # tools
   end
 
   def group_by_id_of_first_column(rows) do
@@ -81,9 +83,11 @@ defmodule LooksLikeANailBackend.Mapper do
       |> get_and_put.(row, :concepts, :concept)
     end)
 
-    tool |> put_in([:tool], unify_entity(tool[:tool], [:features]))
+    tool = tool |> put_in([:tool], unify_entity(tool[:tool], [:features]))
     |> put_in([:features], unify_entity(tool[:features], [:supports]))
     |> put_in([:tool], hd(get_in(tool,[:tool])))
+
+    # IO.inspect tool
   end
   
   @doc """
@@ -110,7 +114,9 @@ defmodule LooksLikeANailBackend.Mapper do
   end
 
   def map_one_row(Tool, %{"row" => row}, columns) do
-    columns = for c <- columns, do: String.to_existing_atom(c)
+    # IO.puts "in map_one_row:"
+    # IO.inspect columns
+    columns = for c <- columns, do: String.to_atom(c)
 
     row = convert_keys_to_atoms row
     

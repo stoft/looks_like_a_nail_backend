@@ -23,6 +23,7 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, tool_path(conn, :index)
     response = json_response(conn, 200)
+    IO.inspect response
     assert response |> Map.has_key?("tools")
   end
 
@@ -33,15 +34,15 @@ defmodule LooksLikeANailBackend.ToolControllerTest do
         "capability" => 205, "supports" => [],
         "title" => "postgresDatastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
-      "supports" => [],
       "capability" => [%{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "DatastorageDescription", "id" => 205,
         "subTitle" => "Capability", "title" => "Datastorage",
         "updated" => "2015-08-01T10:27:56.764Z"}],
+      "concepts" => [],
       "tool" => %{"created" => "2015-08-01T10:27:56.764Z",
         "description" => "PostgresDescription", "id" => 105, "features" => [303],
         "subTitle" => "Database", "title" => "Postgres",
-        "updated" => "2015-08-01T10:27:56.764Z"}, "tools" => []}
+        "updated" => "2015-08-01T10:27:56.764Z"}}
     conn = get conn, tool_path(conn, :show, id)
     actual = json_response(conn, 200)
     assert_match_except expected, actual, ["updated", "created"]
