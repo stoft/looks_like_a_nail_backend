@@ -27,19 +27,16 @@ defmodule LooksLikeANailBackend.Router do
 
     resources "/tools", ToolController do
       resources "/features", FeatureController, only: [:create, :update, :delete] do
-        resources "/concepts", FeatureController, only: [:create, :delete]
+        resources "/supports", SupportsController, only: [:create, :delete]
       end
     end
-    # resources "/concepts", ConceptsController
+    resources "/concepts", ConceptController
     resources "/capabilities", CapabilityController
-    resources "/features", FeatureController, only: [:create, :update, :delete]
-    resources "/implements", ImplementsController, only: [:create]
-    resources "/provides", ProvidesController, only: [:create, :delete]
   end
 
-  def func_plug(conn, opts) do
-    IO.inspect opts
-    IO.inspect conn
-  end
+  # def func_plug(conn, opts) do
+  #   IO.inspect opts
+  #   IO.inspect conn
+  # end
   
 end

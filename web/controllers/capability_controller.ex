@@ -8,7 +8,7 @@ defmodule LooksLikeANailBackend.CapabilityController do
     if(capabilities != nil) do
       render conn, :index, capabilities: capabilities
     else
-      render conn, :index, tools: []
+      render conn, :index, capabilities: []
     end
   end
 

@@ -1,7 +1,7 @@
 defmodule Neo4J.Repo do
   require Logger
 
-  alias LooksLikeANailBackend.Utils
+  alias LooksLikeANailBackend.ConversionHelper
   alias LooksLikeANailBackend.Mapper
 
   # @resultDataContents "\"resultDataContents\" : [\"graph\"]"
@@ -131,10 +131,10 @@ defmodule Neo4J.Repo do
   end
 
   defp convert_field({"created", value}) when is_integer(value) do
-    {:created, Utils.convert_msecs_to_iso(value)}
+    {:created, ConversionHelper.convert_msecs_to_iso(value)}
   end
   defp convert_field({"updated", value}) when is_integer(value) do
-    {:updated, Utils.convert_msecs_to_iso(value)}
+    {:updated, ConversionHelper.convert_msecs_to_iso(value)}
   end
   defp convert_field({k,v}) do
     {String.to_atom(k), v}
