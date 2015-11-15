@@ -8,6 +8,11 @@ defmodule LooksLikeANailBackend.Router do
     plug :protect_from_forgery
   end
 
+  # pipeline :browser do
+  #   ...
+  #   plug :put_secure_browser_headers
+  # end
+
   pipeline :api do
     plug :accepts, ["json"]
     # plug :func_plug

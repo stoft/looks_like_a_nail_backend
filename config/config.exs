@@ -10,7 +10,7 @@ config :looks_like_a_nail_backend, LooksLikeANailBackend.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "0N9Jw3K+VpqtfLynwtpP9uscU1becl56QIyoiy/kCr5L+BW0GQ5Q9V8jtdfnMa7Z",
-  render_errors: [default_format: "html"],
+  render_errors: [accepts: "html"],
   pubsub: [name: LooksLikeANailBackend.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
